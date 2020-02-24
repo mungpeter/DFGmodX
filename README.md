@@ -29,6 +29,16 @@ _Reference 3_: [\*Rahman R, \*Ung PMU, Schlessinger A. KinaMetrix: a web resourc
 
 _Website_: [KinaMetrix.org](http://kinametrix.org)
 
+Reference for Modeller homology modeling: [Sali, Blundell. Comparative protein modelling by satisfaction of spatial restraints. J. Mol. Biol. (1993) 234(3), 779-815.](https://doi.org/10.1006/jmbi.1993.1626)
+
+Reference for Modi-Dunbrack alignment: [Modi V, Dunbrack RL. A structurally-validated multiple sequence alignment of 497 human protein kinase domains. Scientific Reports (2019) 9, 19790.](https://doi.org/10.1038/s41598-019-56499-4)
+
+Reference for Muscle MSA alignment: [MUSCLE: a multiple sequence alignment method with reduced time and space complexity. BMC Bioinf. (2004) 5, 113.](https://doi.org/10.1186/1471-2105-5-113)
+
+Reference for T-Coffee MSA alignment: [Notredame, et al. T-coffee: a novel method for fast and accurate multiple sequence alignment. J. Mol. Biol. (2000) 302(1), 205-217.](https://doi.org/10.1006/jmbi.2000.4042)
+
+Reference for BioPython: [Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics (2009) 25, 1422-3.](https://doi.org/10.1093/bioinformatics/btp163)
+
 ######################################################################################
 # Primary script: Modeling multiple kinases with simple default settings (multi-steps)
 ```
@@ -116,21 +126,26 @@ This script uses PyMOL as the main driver to superimpose all kinase PDB structur
 
 ```
 > 2_pir_result_info.py
-  [ fasta file with Kinase name ] [ conformation ] [ output prefix ]
+  [ fasta file with Kinase name ] 
   [ conformation: cidi -- cidi_s_templ or cidi_y_templ ]
   [               cido -- cido_s_templ or cido_y_templ ]
   [               codi -- codi_templ                   ]
   [               codo -- codo_templ                   ]
   [               wcd  -- wcd_templ                    ]
+  [ output prefix ]
 
 ```
 
 
 ```
 > 3_extract_dope_vol.py
+  [ Fasta Database ]
+  [ Prefix: cidi|cido|codi|codo|wcd ]
+  [ Top Number of model of Volume ]
+  [ Output Prefix ]
 
 ```
-
+- A testing script trying to correlate z-DOPE score of a particular conformation model and its binding site volume as calculated by POVME. Not really useful but it uses _plotnine_ to generate a nice looking plot.
 
 ######################################################################################
 # Example on running DFGmodx
