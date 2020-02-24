@@ -1,0 +1,29 @@
+OutputPrefix		cido.CDK8
+KinaseProfile		/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/x_dataset/stdy_kinase.clean_3.170714.nogap.tcoffee_1d.fasta
+KinaseFamily		serine
+HomeDirectory		/home/pmung/Dropbox (Schlessinger lab)/9_scripts/3_program/structures/3_DFGmodx/test/CDK8
+ModelKinaseFasta		/home/pmung/Dropbox (Schlessinger lab)/9_scripts/3_program/structures/3_DFGmodx/test/CDK8/CDK8.fasta
+FastaDatabase		/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/x_dataset/stdy_kinase.clean_3.170714.tcoffee_1d.fasta
+AlignedModelList		cido.CDK8.aligned_pdb.list
+POVMELocation		/home/software/povme-2.0/POVME2.py
+CHelixDFGModel		cido
+DatasetDirectory		/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/x_dataset
+PDBDirectory		/home/pmung/xxx_data/1_kinase/1_family/1_stkinase/170109/2_align
+RefKinasePath		/home/pmung/xxx_data/1_kinase/1_family/1_stkinase/170109/2_align,/home/pmung/xxx_data/1_kinase/1_family/2_ykinase/170109/2_align
+ChimeraTemplList		cido.CDK8.chimera.list
+POVMEStructure		cido.CDK8.multi_frame.pdb
+SuperposeRefResi		resi 122-138+162-183
+PymolLocation		/usr/bin/pymol
+WorkingDirectory		/home/pmung/Dropbox (Schlessinger lab)/9_scripts/3_program/structures/3_DFGmodx/test/CDK8/0_tempfile
+TemplatePDB		1atp.pdb
+KinaseStructInput		None
+ModifiedPIRFile		cido.CDK8.chimera.pir
+ScriptDirectory		/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx
+NumberOfTopModel		10
+NumberOfModel		10
+PymolAlignPrefix		cido.CDK8.align
+TemplateList		/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/x_dataset/u_cido.stkinase_templ_pdb.txt
+NumberOfCPU		10
+ResultDirectory		/home/pmung/Dropbox (Schlessinger lab)/9_scripts/3_program/structures/3_DFGmodx/test/CDK8/1_result
+POVMEDirectory		/home/pmung/Dropbox (Schlessinger lab)/9_scripts/3_program/structures/3_DFGmodx/test/CDK8/0_tempfile/1_povme
+POVMETemplateFile		/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/x_dataset/u_cido.povme_templ.in

@@ -1,0 +1,8 @@
+## DFG-in, C-out templates (norm) - 180406
+3IS5_A.1atp.pdb
+4U40_A.1atp.pdb
+1AD5_A.1atp.pdb
+3TV6_A.1atp.pdb
+3ALN_A.1atp.pdb
+2Y4I_B.1atp.pdb
+3ALO_A.1atp.pdb

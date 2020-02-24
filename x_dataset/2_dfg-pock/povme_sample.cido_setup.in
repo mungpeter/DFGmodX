@@ -1,0 +1,60 @@
+##########################################################################
+#
+#  Peter M.U. Ung @ MSSM
+#
+#  v1	18.04.08
+#
+#  POVME 2 input file with generalized inclusion/exclusion spheres for
+#  volume calculation of PDB in different conformations. 
+#
+#  In the case of MEK1-CODI-like conformation for type-III inhibitor, a
+#  different set of inclusion/exclusion spheres are used to account for 
+#  the shifted binding pocket
+#
+##########################################################################
+
+OutputFilenamePrefix	./0_sample.cido_param.2/povme_sample
+PDBFileName		./povme_sample.pdb
+NumProcessors		10
+
+### General to CIDI, CIDO, CODI-general, not CODI-typeIII
+PointsInclusionSphere		  6.70   8.30  -1.80  13  # general center
+
+PointsExclusionSphere		 16.30   9.70  -9.30  7   # back-activation
+PointsExclusionSphere		 20.60   9.50   3.50  7   # front-to-side
+PointsExclusionSphere		 -2.30   7.00  -3.10  6   # side channel
+PointsExclusionSphere		 -1.50   6.50  -8.90  6   # back-side channel
+ContiguousPocketSeedSphere	  6.70   8.30  -1.80  8   # general center
+
+### Specific to CIDO; use with General and overlap with 2 exclusion spheres
+PointsExclusionSphere		 22.40   8.60  -0.20  13  # CIDO-specfic
+
+### Specific to only CODI-typeIII; independent of General spheres
+#PointsInclusionSphere		  6.70   8.50  -5.50  13  # type-III center
+
+#PointsExclusionSphere		 -2.30   7.00  -3.10  5   # III side channel
+#PointsExclusionSphere           -4.15  12.50  -9.45  5   # III back-side
+#PointsExclusionSphere		  8.60   9.50   5.90  8   # III ATP volume
+#ContiguousPocketSeedSphere	  6.70   8.50  -5.50  8   # type-III center
+
+### specific to CODO
+
+
+##########################################################################
+
+ContiguousPointsCriteria	 10
+
+GridSpacing 0.75
+DistanceCutoff 1.09
+
+ConvexHullExclusion		true
+SaveIndividualPocketVolumes	true
+SavePocketVolumesTrajectory	true
+SaveTabbedVolumeFile		true
+SaveVolumetricDensityMap	true
+
+
+CompressOutput			false
+UseDiskNotMemory		false
+OutputEqualNumPointsPerFrame	false
+

@@ -1,0 +1,25 @@
+OutputFilenamePrefix	./0_sample.cido_param/povme_sample
+PDBFileName		./povme_sample.pdb
+NumProcessors		10
+
+PointsInclusionSphere		  6.70   8.30  -1.80  13
+
+PointsExclusionSphere            21.30  -1.90   1.90  14	# activa loop
+
+ContiguousPocketSeedSphere	  6.70   8.30  -1.80  6
+ContiguousPointsCriteria	 10
+
+GridSpacing 0.75
+DistanceCutoff 1.09
+
+ConvexHullExclusion		true
+SaveIndividualPocketVolumes	true
+SavePocketVolumesTrajectory	true
+SaveTabbedVolumeFile		true
+SaveVolumetricDensityMap	true
+
+
+CompressOutput			false
+UseDiskNotMemory		false
+OutputEqualNumPointsPerFrame	false
+

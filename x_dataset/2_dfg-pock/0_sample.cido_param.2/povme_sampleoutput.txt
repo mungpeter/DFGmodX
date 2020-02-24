@@ -1,0 +1,688 @@
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (21.3, -1.9, 1.9), radius = 14.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 6.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 3
+	Further processing frame 4
+	Further processing frame 6
+	Further processing frame 8
+	Further processing frame 7
+	Further processing frame 5
+	Further processing frame 2
+	Further processing frame 10
+	Further processing frame 9
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 10: 494.4375 A^3
+	Frame 3: 413.015625 A^3
+	Frame 5: 344.25 A^3
+	Frame 1: 187.734375 A^3
+	Frame 6: 524.390625 A^3
+	Frame 7: 536.203125 A^3
+	Frame 8: 768.65625 A^3
+	Frame 9: 380.53125 A^3
+	Frame 4: 511.734375 A^3
+	Frame 2: 864.421875 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 187.734375
+2            | 864.421875
+3            | 413.015625
+4            | 511.734375
+5            | 344.25
+6            | 524.390625
+7            | 536.203125
+8            | 768.65625
+9            | 380.53125
+10           | 494.4375
+
+Execution time = 15.9483759403 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 8.0
+	PointsExcludeRegions: sphere at (20.0, 9.6, 6.4), radius = 8.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 7.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 7.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 10
+	Further processing frame 8
+	Further processing frame 2
+	Further processing frame 4
+	Further processing frame 7
+	Further processing frame 6
+	Further processing frame 3
+	Further processing frame 5
+	Further processing frame 1
+	Further processing frame 9
+
+Calculating the pocket volume of each frame
+	Frame 3: 398.25 A^3
+	Frame 1: 205.453125 A^3
+	Frame 9: 356.484375 A^3
+	Frame 5: 388.96875 A^3
+	Frame 10: 402.046875 A^3
+	Frame 8: 554.34375 A^3
+	Frame 2: 462.375 A^3
+	Frame 7: 515.953125 A^3
+	Frame 6: 508.78125 A^3
+	Frame 4: 501.609375 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 205.453125
+2            | 462.375
+3            | 398.25
+4            | 501.609375
+5            | 388.96875
+6            | 508.78125
+7            | 515.953125
+8            | 554.34375
+9            | 356.484375
+10           | 402.046875
+
+Execution time = 15.682708025 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 8.0
+	PointsExcludeRegions: sphere at (20.6, 9.5, 3.5), radius = 9.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 7.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 7.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 4
+	Further processing frame 8
+	Further processing frame 7
+	Further processing frame 3
+	Further processing frame 6
+	Further processing frame 2
+	Further processing frame 9
+	Further processing frame 10
+	Further processing frame 5
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 9: 360.28125 A^3
+	Frame 10: 386.4375 A^3
+	Frame 3: 349.3125 A^3
+	Frame 1: 162.0 A^3
+	Frame 5: 361.546875 A^3
+	Frame 8: 469.546875 A^3
+	Frame 7: 474.1875 A^3
+	Frame 2: 460.6875 A^3
+	Frame 4: 462.796875 A^3
+	Frame 6: 469.546875 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 162.0
+2            | 460.6875
+3            | 349.3125
+4            | 462.796875
+5            | 361.546875
+6            | 469.546875
+7            | 474.1875
+8            | 469.546875
+9            | 360.28125
+10           | 386.4375
+
+Execution time = 15.1780650616 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 7.0
+	PointsExcludeRegions: sphere at (20.6, 9.5, 3.5), radius = 7.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 6.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 6.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 9
+	Further processing frame 6
+	Further processing frame 7
+	Further processing frame 8
+	Further processing frame 3
+	Further processing frame 2
+	Further processing frame 4
+	Further processing frame 5
+	Further processing frame 10
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 9: 409.640625 A^3
+	Frame 1: 209.671875 A^3
+	Frame 5: 442.546875 A^3
+	Frame 3: 472.5 A^3
+	Frame 10: 475.453125 A^3
+	Frame 2: 586.828125 A^3
+	Frame 7: 593.578125 A^3
+	Frame 8: 674.578125 A^3
+	Frame 6: 559.40625 A^3
+	Frame 4: 570.796875 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 209.671875
+2            | 586.828125
+3            | 472.5
+4            | 570.796875
+5            | 442.546875
+6            | 559.40625
+7            | 593.578125
+8            | 674.578125
+9            | 409.640625
+10           | 475.453125
+
+Execution time = 15.0628669262 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.5, -5.5), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 5.0
+	PointsExcludeRegions: sphere at (8.6, 9.5, 5.9), radius = 8.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.5, -5.5), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 3
+	Further processing frame 9
+	Further processing frame 4
+	Further processing frame 7
+	Further processing frame 8
+	Further processing frame 5
+	Further processing frame 2
+	Further processing frame 6
+	Further processing frame 10
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 10: 113.0625 A^3
+	Frame 3: 90.28125 A^3
+	Frame 5: 204.1875 A^3
+	Frame 1: 213.890625 A^3
+	Frame 6: 323.15625 A^3
+	Frame 7: 343.828125 A^3
+	Frame 4: 150.1875 A^3
+	Frame 8: 432.84375 A^3
+	Frame 9: 724.359375 A^3
+	Frame 2: 779.203125 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 213.890625
+2            | 779.203125
+3            | 90.28125
+4            | 150.1875
+5            | 204.1875
+6            | 323.15625
+7            | 343.828125
+8            | 432.84375
+9            | 724.359375
+10           | 113.0625
+
+Execution time = 12.8263449669 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.5, -5.5), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 5.0
+	PointsExcludeRegions: sphere at (-4.15, 12.5, -9.45), radius = 5.0
+	PointsExcludeRegions: sphere at (8.6, 9.5, 5.9), radius = 8.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.5, -5.5), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 4
+	Further processing frame 3
+	Further processing frame 5
+	Further processing frame 8
+	Further processing frame 7
+	Further processing frame 9
+	Further processing frame 10
+	Further processing frame 6
+	Further processing frame 1
+	Further processing frame 2
+
+Calculating the pocket volume of each frame
+	Frame 10: 113.0625 A^3
+	Frame 3: 90.28125 A^3
+	Frame 5: 204.1875 A^3
+	Frame 1: 90.28125 A^3
+	Frame 6: 323.15625 A^3
+	Frame 4: 150.1875 A^3
+	Frame 7: 343.828125 A^3
+	Frame 8: 402.890625 A^3
+	Frame 9: 724.359375 A^3
+	Frame 2: 778.359375 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 90.28125
+2            | 778.359375
+3            | 90.28125
+4            | 150.1875
+5            | 204.1875
+6            | 323.15625
+7            | 343.828125
+8            | 402.890625
+9            | 724.359375
+10           | 113.0625
+
+Execution time = 12.942278862 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 7.0
+	PointsExcludeRegions: sphere at (20.6, 9.5, 3.5), radius = 7.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 6.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 6.0
+	PointsExcludeRegions: sphere at (21.9, 5.6, -0.2), radius = 16.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 4
+	Further processing frame 6
+	Further processing frame 3
+	Further processing frame 7
+	Further processing frame 9
+	Further processing frame 2
+	Further processing frame 5
+	Further processing frame 8
+	Further processing frame 10
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 1: 45.140625 A^3
+	Frame 7: 234.984375 A^3
+	Frame 5: 151.03125 A^3
+	Frame 3: 160.734375 A^3
+	Frame 10: 182.671875 A^3
+	Frame 4: 208.828125 A^3
+	Frame 6: 234.984375 A^3
+	Frame 9: 179.296875 A^3
+	Frame 8: 277.59375 A^3
+	Frame 2: 339.1875 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 45.140625
+2            | 339.1875
+3            | 160.734375
+4            | 208.828125
+5            | 151.03125
+6            | 234.984375
+7            | 234.984375
+8            | 277.59375
+9            | 179.296875
+10           | 182.671875
+
+Execution time = 24.7713370323 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 7.0
+	PointsExcludeRegions: sphere at (20.6, 9.5, 3.5), radius = 7.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 6.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 6.0
+	PointsExcludeRegions: sphere at (21.9, 5.6, -0.2), radius = 14.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 4
+	Further processing frame 6
+	Further processing frame 7
+	Further processing frame 2
+	Further processing frame 8
+	Further processing frame 3
+	Further processing frame 5
+	Further processing frame 10
+	Further processing frame 9
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 1: 88.171875 A^3
+	Frame 5: 261.140625 A^3
+	Frame 3: 270.84375 A^3
+	Frame 8: 362.390625 A^3
+	Frame 10: 288.140625 A^3
+	Frame 9: 279.28125 A^3
+	Frame 7: 378.84375 A^3
+	Frame 2: 464.0625 A^3
+	Frame 4: 338.34375 A^3
+	Frame 6: 365.34375 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 88.171875
+2            | 464.0625
+3            | 270.84375
+4            | 338.34375
+5            | 261.140625
+6            | 365.34375
+7            | 378.84375
+8            | 362.390625
+9            | 279.28125
+10           | 288.140625
+
+Execution time = 20.4402899742 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 7.0
+	PointsExcludeRegions: sphere at (20.6, 9.5, 3.5), radius = 7.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 6.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 6.0
+	PointsExcludeRegions: sphere at (21.9, 7.6, -0.2), radius = 13.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 7
+	Further processing frame 4
+	Further processing frame 5
+	Further processing frame 2
+	Further processing frame 6
+	Further processing frame 9
+	Further processing frame 8
+	Further processing frame 10
+	Further processing frame 3
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 1: 106.734375 A^3
+	Frame 5: 289.828125 A^3
+	Frame 7: 413.015625 A^3
+	Frame 8: 391.921875 A^3
+	Frame 3: 301.21875 A^3
+	Frame 10: 323.578125 A^3
+	Frame 4: 378.84375 A^3
+	Frame 2: 475.03125 A^3
+	Frame 6: 399.9375 A^3
+	Frame 9: 313.875 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 106.734375
+2            | 475.03125
+3            | 301.21875
+4            | 378.84375
+5            | 289.828125
+6            | 399.9375
+7            | 413.015625
+8            | 391.921875
+9            | 313.875
+10           | 323.578125
+
+Execution time = 18.2019991875 sec
+
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (16.3, 9.7, -9.3), radius = 7.0
+	PointsExcludeRegions: sphere at (20.6, 9.5, 3.5), radius = 7.0
+	PointsExcludeRegions: sphere at (-2.3, 7.0, -3.1), radius = 6.0
+	PointsExcludeRegions: sphere at (-1.5, 6.5, -8.9), radius = 6.0
+	PointsExcludeRegions: sphere at (22.4, 8.6, -0.2), radius = 13.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 8.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param.2/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 10
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 7
+	Further processing frame 10
+	Further processing frame 3
+	Further processing frame 6
+	Further processing frame 5
+	Further processing frame 4
+	Further processing frame 8
+	Further processing frame 2
+	Further processing frame 9
+	Further processing frame 1
+
+Calculating the pocket volume of each frame
+	Frame 5: 306.28125 A^3
+	Frame 1: 112.21875 A^3
+	Frame 10: 340.453125 A^3
+	Frame 3: 315.984375 A^3
+	Frame 8: 408.375 A^3
+	Frame 7: 428.203125 A^3
+	Frame 2: 478.828125 A^3
+	Frame 9: 330.328125 A^3
+	Frame 4: 398.671875 A^3
+	Frame 6: 411.75 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 112.21875
+2            | 478.828125
+3            | 315.984375
+4            | 398.671875
+5            | 306.28125
+6            | 411.75
+7            | 428.203125
+8            | 408.375
+9            | 330.328125
+10           | 340.453125
+
+Execution time = 18.4691720009 sec
+

@@ -1,0 +1,6 @@
+## DFG-in, C-out templates (specific, met) - 180406
+2WGJ_A.1atp.pdb
+3F66_A.1atp.pdb
+3ZZE_A.1atp.pdb
+4XMO_A.1atp.pdb
+5EOB_A.1atp.pdb

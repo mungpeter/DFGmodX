@@ -1,0 +1,20 @@
+t_coffee - psi (very slow 1st round, not accurate)
+> t_coffee -in test.fasta -profile=profile.fasta -output fasta -outfile combine.psi.fasta -mode psicoffee -email pmung@umich.edu
+
+t_coffee - expresso (very slow 1st round, not accurate)
+> t_coffee -in test.fasta -profile profile.fasta -outfile combine.exp.fasta -output fasta -mode expresso -method=mafft_msa,t_coffee_msa,dialigntx_msa,muscle_msa,kalign_msa -email pmung@umich.edu
+
+t_coffee (moderate accurate)
+> t_coffee -in test.fasta -profile profile.2.fasta -outfile combine.2.tcoff.fasta -output fasta
+* t_coffee fuxked up case of residues. > t_coffee -other_pg seq_reformat -in combine.psi.fasta -action +upper > x.fasta
+
+
+Muscle (not too accurate)
+# single sequence alignment is accurate
+> muscle -profile -in1 profile.fasta -in2 test.fasta -out combine.musc.fasta -maxiters 64
+
+
+Clustalo (accurate)
+> clustalo --profile1 profile.fasta -i test.fasta --seqtype=Protein --iterations 64 -o combine.clust.fasta --force
+
+

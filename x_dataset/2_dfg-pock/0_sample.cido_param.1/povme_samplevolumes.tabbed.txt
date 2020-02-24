@@ -1,0 +1,10 @@
+1atp.cidi.pdb	236.25
+4asd.cido.pdb	900.28125
+1xkk.codi.pdb	427.359375
+5fd2.1t.pdb	533.25
+2r4b.mbum.pdb	496.96875
+4ehg.hbum.pdb	540.84375
+3tv6.norm.pdb	615.09375
+4m15.mek.pdb	813.375
+4xmo.met.pdb	400.359375
+4i22.egfr.pdb	525.65625

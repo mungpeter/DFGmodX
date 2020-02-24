@@ -1,0 +1,32 @@
+#
+#  for DFG-pocket excluding hinge- and linker-sites
+#
+#
+
+OutputFilenamePrefix	./0_sample/povme_sample
+PDBFileName		./povme_sample.pdb
+NumProcessors		10
+
+PointsInclusionSphere		 6.70   4.30  -8.80  5.0  # DFG-pocket
+
+PointsExclusionSphere           15.50   7.00  -9.40  5.0  # back
+PointsExclusionSphere		 4.60  10.40   0.70  5.5  # front
+PointsExclusionSphere		-2.30   4.40  -8.70 12.0  # side
+
+ContiguousPocketSeedSphere	 6.70   4.30  -8.80  4
+ContiguousPointsCriteria	10
+
+GridSpacing		0.75
+DistanceCutoff		1.09
+
+ConvexHullExclusion		true
+SaveIndividualPocketVolumes	true
+SavePocketVolumesTrajectory	true
+SaveTabbedVolumeFile		true
+SaveVolumetricDensityMap	true
+
+
+CompressOutput			false
+UseDiskNotMemory		false
+OutputEqualNumPointsPerFrame	false
+

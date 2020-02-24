@@ -1,0 +1,136 @@
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (21.3, -1.9, 1.9), radius = 14.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 1
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 6.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 8
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (21.3, -1.9, 1.9), radius = 14.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 1
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 6.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 8
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 1
+	Further processing frame 2
+	Further processing frame 3
+	Further processing frame 4
+	Further processing frame 5
+	Further processing frame 6
+	Further processing frame 7
+	Further processing frame 8
+	Further processing frame 9
+	Further processing frame 10
+
+Calculating the pocket volume of each frame
+	Frame 1: 236.25 A^3
+	Frame 2: 900.28125 A^3
+
+If you use POVME in your research, please cite the following reference:
+  Durrant, J. D., C. A. de Oliveira, et al. (2011). "POVME: An algorithm
+  for measuring binding-pocket volumes." J Mol Graph Model 29(5): 773-776.
+
+Parameters:
+	UseDiskNotMemory: False
+	SavePoints: False
+	PointsIncludeRegions: sphere at (6.7, 8.3, -1.8), radius = 13.0
+	OutputEqualNumPointsPerFrame: False
+	SaveVolumetricDensityMap: True
+	PointsExcludeRegions: sphere at (21.3, -1.9, 1.9), radius = 14.0
+	SavePocketVolumesTrajectory: True
+	SaveIndividualPocketVolumes: True
+	SaveTabbedVolumeFile: True
+	GridSpacing: 0.75
+	NumProcessors: 10
+	ContiguousPocketSeedRegions: sphere at (6.7, 8.3, -1.8), radius = 6.0
+	DistanceCutoff: 1.09
+	OutputFilenamePrefix: ./0_sample.cido_param/povme_sample
+	PDBFileName: ./povme_sample.pdb
+	ConvexHullExclusion: True
+	ContiguousPointsCriteria: 8
+	CompressOutput: False
+
+Generating the pocket-encompassing point field
+
+Reading frames from ./povme_sample.pdb
+	Further processing frame 5
+	Further processing frame 10
+	Further processing frame 7
+	Further processing frame 6
+	Further processing frame 8
+	Further processing frame 3
+	Further processing frame 1
+	Further processing frame 4
+	Further processing frame 2
+	Further processing frame 9
+
+Calculating the pocket volume of each frame
+	Frame 5: 496.96875 A^3
+	Frame 1: 236.25 A^3
+	Frame 10: 525.65625 A^3
+	Frame 3: 427.359375 A^3
+	Frame 4: 533.25 A^3
+	Frame 6: 540.84375 A^3
+	Frame 7: 615.09375 A^3
+	Frame 8: 813.375 A^3
+	Frame 9: 400.359375 A^3
+	Frame 2: 900.28125 A^3
+
+FRAME        | VOLUME (A^3)
+-------------+-------------
+1            | 236.25
+2            | 900.28125
+3            | 427.359375
+4            | 533.25
+5            | 496.96875
+6            | 540.84375
+7            | 615.09375
+8            | 813.375
+9            | 400.359375
+10           | 525.65625
+
+Execution time = 15.4200589657 sec
+

@@ -1,0 +1,37 @@
+REMARK	18.04.06 - based on the parameters used for original DFGmod in 2015,
+REMARK	but added more exclusion volume (radius in POVME input, diameter here)
+REMARK
+REMARK	Grid spacing = 0.75	B-factor = radius grid-pt (half-box length)
+REMARK
+REMARK	General usage for CIDI, CIDO, CODI-general, except type-III CODI
+REMARK	(A) general; (B) CIDO-only; (C) type-III CODI only
+REMARK
+REMARK	PointsInclusionSphere -- (A) 'Center' phenyl ring of sorafenib
+HETATM    1  C   INC A   1       6.700   8.300  -1.800  1.00 13.00           C
+TER
+REMARK	PointsExclusionSphere -- (A) 'Back-Act' behind activation loop
+HETATM    2  OB  XBA A   2      16.300   9.700  -9.300  1.00  7.00           O
+TER
+REMARK  PointsExclusionSphere -- (A) 'Front-to-side' wide space
+HETATM    3  NF  XFS A   3      20.600   9.500   3.500  1.00  8.00           N
+TER
+REMARK  PointsExclusionSphere -- (A) 'Side' channel
+HETATM    4  CL  XSD A   4      -2.300   7.000  -3.100  1.00  6.00           CL
+TER
+REMARK  PointsExclusionSphere -- (A) 'Back-Side' channel
+HETATM    5  S   XBS A   5      -1.500   6.500  -8.900  1.00  6.00           S
+TER
+REMARK
+REMARK  PointsExclusionSphere -- (B) 'CIDO-exclude' specific for CIDO
+HETATM    6  BR  XDO A   6      21.900   5.600  -0.200  1.00 18.00           BR
+TER
+REMARK
+REMARK  PointsInclusionSphere -- (C) 'Center-III' typeIII center
+HETATM    7  C3  IN3 A   7       6.700   8.300  -5.500  1.00 13.00           C
+TER
+REMARK  PointsExclusionSphere -- (C) 'typeIII-side' typeIII side channel
+HETATM    8  P   X3S A   8      -2.300   7.000  -3.100  1.00  5.00           N
+TER
+REMARK  PointsExclusionSphere -- (C) 'typeIII-ATP' typeIII ATP volume
+HETATM    9  P1  X3A A   8       8.600   9.500   5.900  1.00  6.00           P
+TER

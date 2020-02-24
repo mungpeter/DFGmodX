@@ -1,0 +1,15 @@
+REMARK	18.04.06 based on the parameters used for original DFGmod in 2015
+REMARK	for DFG-pocket only, exclude the hinge- and linker regions
+REMARK
+REMARK	PointsInclusionSphere
+HETATM    1  C   INC A   1       6.700   4.300  -8.800  1.00 10.00           C
+TER
+REMARK	PointsExclusionSphere 'back'
+HETATM    2  OB  EXB A   2      15.500   7.000  -9.400  1.00 10.00           O
+TER
+REMARK  PointsExclusionSphere 'front'
+HETATM    3  N   EXF A   3       4.600  10.400   0.700  1.00 11.00           N
+TER
+REMARK  PointsExclusionSphere 'side'
+HETATM    4  S   EXS A   4      -2.300   4.420  -8.700  1.00 12.00           S
+TER

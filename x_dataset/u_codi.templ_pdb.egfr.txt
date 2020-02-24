@@ -1,0 +1,5 @@
+## DFG-in, C-out templates (specific, egfr) - 180406
+4O2P_A.1atp.pdb
+4I22_A.1atp.pdb
+2C0O_A.1atp.pdb
+3VRZ_A.1atp.pdb

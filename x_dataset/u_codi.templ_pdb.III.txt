@@ -1,0 +1,11 @@
+## DFG-in, C-out templates (specific, mek) - 180406
+1S9I_A.1atp.pdb
+3EQC_A.1atp.pdb
+3WIG_A.1atp.pdb
+3ZLW_A.1atp.pdb
+4AN9_A.1atp.pdb
+4ARK_A.1atp.pdb
+4MNE_A.1atp.pdb
+4M15_A.1atp.pdb
+5TF9_A.1atp.pdb
+4U81_A.1atp.pdb

@@ -1,0 +1,77 @@
+> #1# Warning: Directory not found. Skip: '+name
+
+> #2# ERROR: Wrong Step input (only accept 1-3): '+str(mod_step)
+
+> #2# ERROR: Both "KinaseStructInput" and "ModelKinaseFasta" are "None: '+mdl_output_pref
+
+> #2# ERROR: \'{0}\' is not specified: {0}: {1}'.format(
+
+> #2# WARNING: Input sequence and template structure {0}.{1}: {4}
+> #2# WARNING: have low sequence identity: {2:4.1f} %
+> #2# WARNING: Choose another template structure that is a closer homolog to the target kinase
+> #2# WARNING: and with higher sequence identity (> {3}%)'.format(
+
+> #2# WARNING: Input sequence and template structure {0}.{1}
+               have low sequence identity: {2:4.1f} %
+               Choose another template structure that is a closer homolog to the target kinase
+               and with higher sequence identity (> {3}%)'.format(k_name, template_pdb, Data[0][2], ident_thres))
+
+> #2# WARNING: Input sequence and template structure {0}.{1}: {4}
+> #2# WARNING: have low sequence identity: {2:4.1f} %
+> #2# WARNING: Choose another template structure that is a closer homolog to the target kinase
+> #2# WARNING: and with higher sequence identity (> {3}%)'.format(
+
+> #2# ERROR: {4} Cannot find protein structure of seq: "{0}.{1}" in directories:
+> #2# ERROR: "{2}"
+> #2# ERROR: "{3}"'.format(
+
+> #2# ERROR: {0} (file) does not exist.'.format(mdl_prot_fasta))
+
+> #2# ERROR: {0} does not exist in fasta database.'.format(mdl_prot_fasta))
+
+> #2# Alignment Warning: Cannot find Blastp output. Seq identity to kinase too low? '+fasta_name)
+
+> #2# Alignment Warning: Blastp failed. Seq Identity to kinase too low? '+fasta_name)
+
+> #1# WARNING: Modelling failed for: '+mdl_output_pref)
+
+> #4# BAD ALIGNMENT WARNING: {0} Model {1} zDOPE: {2:.2f}###'.format(
+  ### mdl_output_pref.align_pdb.list is hard-coded
+
+> #2# ERROR: No Model Sequence was found in .pir file: '+mdl_output_pref)
+
+> #2# ERROR: Require 2 DFG-CutSite references: {0} found in {1}: {2}'.format(
+
+> #2# ERROR: Require 2 NC-CutSite references: {0} found in {1}: {2}'.format(
+
+> #2# ERROR: {0} has only {1} of {2} Cutsites -- {3}: {4}'.format(
+
+> #2# ERROR: Parsing reference DFG-sequences {0} and {1}
+> #2# ERROR: do not give same CutSite profile: {2} -- {3} vs {4}: {5}
+
+> #2# ERROR: Parsing reference NC-sequences {0} and {1}
+> #2# ERROR: do not give same CutSite profile: {2} -- {3} vs {4}: {5}
+
+> #2# ERROR: Missing "Header" for entry no.{0}: {1}'.format(
+
+> #2# ERROR: Missing "Info Line" for entry no.{0}: {1}'.format(
+
+> #2# ERROR: The sequence has {0} elements and is not dividable by 4: {1}'.format(
+
+> #2# ERROR: Misalignment betweeen model and target sequence {0}: {1}'.format(
+
+> #1# INFO: "KinaseStructInput" is "None", use best matching structure: '+mdl_output_pref)
+
+> #1#: INFO: Running with normal "_TEMP.{0}.y1.fasta": {0}'.format(mdl_output_pref))
+
+> #1#: INFO: Running with corrected "_TEMP.{0}.y1.corr.fasta": {0}'.format(mdl_output_pref))
+
+> #2# INFO: Input "KinaseFasta" not found in "FastaDatabase": '+mdl_prot_fasta)
+
+> #4# FATAL: Alignment of Target seq to Template seq has different length: '+mdl_output_pref)
+
+> #1# WARNING: {0} Input FASTA has low Identity to best match < 50%, use T_Coffee: {1}'.format(
+
+> #2# ERROR: Cannot find structure to aggregate for POVME: {0}'.format(mdl_list_input))
+
+> #2# ERROR: Cannot find {0}: {1}'.format(var, mdl_output_pref))

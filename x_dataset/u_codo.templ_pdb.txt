@@ -1,0 +1,8 @@
+## DFG-out, C-out templates (7) - 160715
+4AT5_A.1atp.pdb
+2C6E_A.1atp.pdb
+4JAI_A.1atp.pdb
+3NAX_A.1atp.pdb
+2RF9_A.1atp.pdb
+3O23_A.1atp.pdb
+3EFJ_A.1atp.pdb
