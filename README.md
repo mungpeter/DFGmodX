@@ -1,6 +1,9 @@
 # DFGModx
-
-Generate Typical Protein Kinase Catalytic Domain in Inactive Conformations (CIDO/CODI/CODO)
+**Generate Typical Protein Kinase Catalytic Domain in Inactive Conformations (CIDO/CODI/CODO)**
+```
+  author: Peter M.U. Ung @ MSSM
+  vers:   3.
+```
 
 - Step 1: compare the input kinase FASTA sequence to an internal library of protein kinase with atomic structures available
 - Step 2: use the kinase structures that is most similar to the input kinase sequence as Base structure
@@ -8,17 +11,16 @@ Generate Typical Protein Kinase Catalytic Domain in Inactive Conformations (CIDO
 - Step 4: generate homology models of input kinase based on the Base kinase structure and the template structures in alternative conformation
 - Step 5: calculate the volume of the active site, rank and select ones with the largest volume
 
-CIDO (aC-helix-in/DFG-out)
-This is the typical DFG-out conformation described in the literature, where DFG-motif has a 180-degree flip and brings the DFG-Phe phenyl ring out from the hydrophobic deep pocket in the kinase, leaving the deep DFG-pocket vacant and available for small molecule binding.
-This range of movement can be well-captured by **one population** (set) of kinase structures in DFG-out conformation, where DFG-motif has a clear flip, while the set captures the range of small-lobe movement observed. Because the TK family has been heavily studied and with the most number of knownn CIDO structures, there are **2** sets of CIDO templates, one of TK family and another one for all other kinases.
+**CIDO (aC-helix-in/DFG-out)**
+- This is the typical DFG-out conformation described in the literature, where DFG-motif has a 180-degree flip and brings the DFG-Phe phenyl ring out from the hydrophobic deep pocket in the kinase, leaving the deep DFG-pocket vacant and available for small molecule binding.
+- This range of movement can be well-captured by **one population** (set) of kinase structures in DFG-out conformation, where DFG-motif has a clear flip, while the set captures the range of small-lobe movement observed. Because the TK family has been heavily studied and with the most number of knownn CIDO structures, there are **2** sets of CIDO templates, one of TK family and another one for all other kinases.
 
-* When doing molecular docking to these CIDO models, I found that default settings for OpenEye FRED works very well, while Schrö
-dinger GLIDE will need a 0.75x adjustment to the GRID van der Waals radius to get similar results. In both cases, should also set a hydrophobic sphere in the DFG-pocket to enforce docking to that site while having H-bond constraints to the hinge residue.
+- When doing molecular docking to these CIDO models, I found that default settings for OpenEye FRED works very well, while Schrödinger GLIDE will need a 0.75x adjustment to the GRID van der Waals radius to get similar results. In both cases, should also set a hydrophobic sphere in the DFG-pocket to enforce docking to that site while having H-bond constraints to the hinge residue.
 
-CODI (aC-helix-out/DFG-in)
-This is the C-helix-out conformation described in the literature as the "CDK-like" or "Src-like" inactive conformation. This conformation encompasses a range of aC-helix movements - translational, rotational, angular - that is more heterogeneous than DFG-motif movement (mostly just -in and -out). 
-Due to the large range of aC-helix movemnents, there are actually **several (4+) sub-populations** of CODI conformations. **4** of them are often seen in multiple kinases in different families, while some are family-specific. To generalize the modeling of CODI conformation, **4 sub-populations** (sets) are used in the modeling process as compared to CIDO model generation.
-Notably, MEK has been seen to adopt a unique CODI conformation when bound to type-III inhibitor and ATP together, while cMET adopts another unique CODI conformation held up by an electrostatic interaction on its activation loop. These case-specific CODI conformations are not included in the general CODI sub-populations used for modeling but are also available for use.
+**CODI (aC-helix-out/DFG-in)**
+- This is the C-helix-out conformation described in the literature as the "CDK-like" or "Src-like" inactive conformation. This conformation encompasses a range of aC-helix movements - translational, rotational, angular - that is more heterogeneous than DFG-motif movement (mostly just -in and -out). 
+- Due to the large range of aC-helix movemnents, there are actually **several (4+) sub-populations** of CODI conformations. **4** of them are often seen in multiple kinases in different families, while some are family-specific. To generalize the modeling of CODI conformation, **4 sub-populations** (sets) are used in the modeling process as compared to CIDO model generation.
+- Notably, MEK has been seen to adopt a unique CODI conformation when bound to type-III inhibitor and ATP together, while cMET adopts another unique CODI conformation held up by an electrostatic interaction on its activation loop. These case-specific CODI conformations are not included in the general CODI sub-populations used for modeling but are also available for use.
 
 
 _Reference 1_: [Ung, P.M.U.; Schlessinger, A. DFGmodel: predicting protein kinase structures in inactive states for structure-based discovery of type-II inhibitors. ACS Chem. Biol. 2015, 10(1):269-278.](https://doi.org/10.1021/cb500696t)
@@ -40,7 +42,7 @@ Reference for T-Coffee MSA alignment: [Notredame, et al. T-coffee: a novel metho
 Reference for BioPython: [Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics (2009) 25, 1422-3.](https://doi.org/10.1093/bioinformatics/btp163)
 
 ######################################################################################
-# Primary script: Modeling multiple kinases with simple default settings (multi-steps)
+- **Primary script: Modeling multiple kinases with simple default settings (multi-steps)**
 ```
 > 1_auto_DFGmodx.py
     [ FASTA file of kinase(s) to be modeled ]
@@ -49,8 +51,9 @@ Reference for BioPython: [Biopython: freely available Python tools for computati
     [ Number of top-models to take ]
     [ CPU per Model generation run ]
     [ Step: 0 - Setup homology modeling (default)                   ]
-    [       1 - Setup homology modeling (_TEMP.y.fasta corrected)   ]
-    [           #( rename *.y1.fasta to corrected *.y1.corr.fasta ) ]
+    [       1 - Edit paths when change from local to HPC directory  ]
+##  [       1 - Setup homology modeling (_TEMP.y.fasta corrected)   ] no used anymore
+##  [           #( rename *.y1.fasta to corrected *.y1.corr.fasta ) ]
     [       2 - Run homology modeling                               ]
     [       3 - Run volume calculation and selection                ]
     
@@ -62,18 +65,22 @@ e.g.> ./1_auto_DFGmodx.py      \
           ulk4_and_kit.fasta   \
           cido  10 5 5         \
           0           # "0" will stop after generate initial setup
-                      # "1" will restart those x.fasta ones with _TEMP.y.fasta correction
+                      # "1" will alter the directory paths to match the ones in "x_variables.py"
                       # "2" will *only* generate actual models + volumes with successful setup
                       # "3" will *only* use generated models to calculate volumes
 ```
 For general purpose and simply automated setup/running of DFGModx, use **1_auto_DFGMod.py**. This is the wrapper script of the backbone script *1_run_single_DFGmodx.py* with all default settings for modeling kinase structures in different conformations. The entire modeling takes 2-3 steps:
 - **Step 0**: generate the initial setup files and folders for all kinases being modeled with default setting
 - **Step 2**: generate kinase models with default settings, results in the **/1_dfgmod** folder
-- *step 1*: an optional step to fix problems appeared in "Step 0" by introducing a **fasta file** with **corrected** alignment, with nameing convention: \_TEMP.{0}.y1.fasta, where {0} = model output prefix.
+nameing convention: \_TEMP.{0}.y1.fasta, where {0} = model output prefix.
 - *step 3*: an optional step to run homology model binding site volume calculation. Generally won't need to use this unless Step 2 failed.
 
+- _Special, Step 1_: This is used when the setup files (<kinase>.setup, *.pir, *.pdb) are all ready and only need to do the production run (-mod, -vol) on a different computer, i.e. from local WorkStation to HPC cluster. This updates all the directory paths to match the new computer's directories according to the new "x_variables.py"
+```> ./1_auto_DFGmodx.py kinome.fasta cido 10 5 5   1```
+
+
 ######################################################################################
-# Optional script: Run DFGmodx on individual kinase with more options (multi-step)
+- **Optional script: Run DFGmodx on individual kinase with more options (multi-step)**
 ```
 > 1_run_single_DFGmodx.py
       [ Setup Script: formatted setup file | Pickle ]\n
@@ -82,12 +89,14 @@ For general purpose and simply automated setup/running of DFGModx, use **1_auto_
               -mod    Run DFGmodel only
               -vol    Select top models only
               -set    Generate template setup script\n
+              -none   * use new paths in "x_variables"; Workstation -> HPC
     ** Always use -pir then -mod, and ALWAYS check .pir for additional chain
        breaks. Only use -full if you have checked the kinase and it has no
        additional chain break or missing residues\n
       [ Opt:   -force   Forced restart of /dfgworking directory ]
       [ Opt:   -restart Forced restart of /1_result   directory ]
-      [ Opt:   -pass    Pass along; always use this unless otherwise ]\n
+      [ Opt:   -pass    Pass along; always use this unless otherwise ]
+      [ Opt:   -paths   * Update directory paths in setup files; use with "-none" ]
 
 e.g.>  ./1_run_single_DFGmodx.py setup.file -pir -pass
 ```
@@ -101,8 +110,26 @@ This is the backbone script to manually setup and modeling of a single kinase. T
 - _Step 3_: optional step, use if volume was not calculated right after the modeling step
 ```> ./1_run_single_DFGmodx.py setup.txt -vol -pass```
 
+- _Special_: This is used when the setup files (<kinase>.setup, *.pir, *.pdb) are all ready and only need to do the production run (-mod, -vol) on a different computer, i.e. from local WorkStation to HPC cluster. This updates all the directory paths to match the new computer's directories according to the new "x_variables.py"
+```> ./1_run_single_DFGmodx.py setup.txt -none -paths```
+
 ###################################################################################
-# Optional script: Superimpose all kinase structures to a common reference frame
+- **Optional script: Check PDB structure by comparing PDB-sequence to official FASTA sequence**
+```
+> 0_validate_PDB_fasta_seq.py
+      [ List of PDB file to be validated ]
+      [ No-gap FASTA sequences downloaded from RCSB for the PDBs ]
+
+e.g.> ./0_validate_PDB_fasta_seq.py 
+          pdb_structures_to_be_checked.list
+          correspond_complete_PDB_seqs.fasta
+```
+- PDB sequence downloaded from RCSB (or supplied) reflects the full-length sequence used in crystallography, but actually resolved PDB structure can have unresolved residues, resulting in Xtal FASTA sequence that is shorter by a few residues. Sometimes there are extra residues in Xtal structures that are not included in the published FASTA sequences too.
+- This script compares the FASTA sequences published in RCSB (or supplied) and the xtal-FASTA extracted from the actual PDB structures. If the FASTA sequences have different lengths that indicates a discrepancy, they and aligned with Clustalo to show where the missing/inserted residues are. Use this detection result to correct the sequence in the FASTA database manually.
+
+####################################################################################
+- **Optional script: Superimpose all kinase structures to a common reference frame**
+
 ```
 > 1_pymol_alignment.py
       [Template PDB]                      * usually 1ATP.pdb
@@ -181,27 +208,30 @@ This script uses PyMOL as the main driver to superimpose all kinase PDB structur
                                         |..... ...
 
 ```
-In this example, 2 kinases (ULK4 and KIT) are used. 
-* KIT modeling should go without a hitch since it has a fairly typical sequence.
-* Standard sequence alignment will fail for ULK4 because it has 1 fewer large-lobe helix than other typical kinases and will generate bad models (zDOPE > +0.0), while the pseudokinase nature makes the automated alignment of conserved region bad, hence will need to do a alignment correction before proceeding.
+- In this example, 2 kinases (ULK4 and KIT) are used. 
+- KIT modeling should go without a hitch since it has a fairly typical sequence.
+- Standard sequence alignment will fail for ULK4 because it has 1 fewer large-lobe helix than other typical kinases and will generate bad models (zDOPE > +0.0), while the pseudokinase nature makes the automated alignment of conserved region bad, hence will need to do a alignment correction before proceeding.
 
-At the end of every step, the log file should be checked for **WARNING** and **ERROR** flags, especially when many kinases are being modeled at the same time. Most common errors are misalignment of the conserved region, mismatching between sequence and template structures.
+- At the end of every step, the log file should be checked for **WARNING** and **ERROR** flags, especially when many kinases are being modeled at the same time. Most common errors are misalignment of the conserved region, mismatching between sequence and template structures.
 
 ###################################################################################
-* Required packages:
+- **Required packages:**
 ```
-  POVME          # 2.1     standalone program
-  PyMOL          # 1.8+    standalone program
-  Modeller       # 9.20+   standalone program or Conda
-  Muscle         # 3.8.51
-  T-Coffee       # 13
+  Blast+         # 2.6.0+  standalone program or conda
+  POVME          # 2.1     source codes already integrated into DFGmodx
+  PyMOL          # 1.8+    standalone program or conda
+  Modeller       # 9.20+   standalone program or conda
+  Clustalo       # 1.2     standalone program or conda
+  Muscle         # 3.8.51  standalone program or conda
+  T-Coffee       # 13+     standalone program or conda
 
   Python         # 3.7.2+
     numpy          # 1.17.3
     pandas         # 0.25.3
     pathos         # 0.2.3
-    biopython      # 1.74
+    biopython      # 1.74     conda
     zlib           # 1.2.11
     bzip2          # 1.0.6
-    plotnine       # 
+    tqdm           #
+    tarfile        #
 ```

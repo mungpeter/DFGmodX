@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-import sys,os,re,glob,subprocess
+import sys,os
+import re,glob
+import subprocess
+import pandas as pd
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -10,7 +13,7 @@ from Bio.PDB.PDBParser   import PDBParser
 from Bio.PDB.Polypeptide import PPBuilder
 
 from aa_residue import AA
-from CommonUtility import *
+#from CommonUtility import *
 from x_variables import per_line
 from x_pir_edit  import CheckPIR
 from x_pir_edit  import ModifyPIR
@@ -111,27 +114,22 @@ msg = '''
 
 ##########################################################################
 
-def ModellerMultiAlignGen(  fasta_database, kinase_profile, pdb_directory,
-                            work_directory, template_list, tget_pdb, mdl_prot_fasta, 
-                            best_match_struc, pc_ident, 
-                            align_switch, correct_fasta,
+def ModellerMultiAlignGen(  pdb_directory, work_directory,
+                            struct_database, struct_nogap, kinome_database, kinome_nogap,
+                            template_list, tget_pdb, mdl_prot_fasta, 
+                            best_match_struc, pc_ident, align_switch, correct_fasta,
                             chimera_tmpl_list, mdl_pir_file, mdl_output_pref ):
 
   # Build database of full-seq FASTA
-  Database, db_order = CacheSeqDatabase(fasta_database)
-  NoGapDB,  ng_order = CacheSeqDatabase(kinase_profile)
+  Database, db_order = CacheSeqDatabase([struct_database,kinome_database])
+  NoGapDB,  ng_order = CacheSeqDatabase([struct_nogap,kinome_nogap])
 
   # Read in the list of PDBs to be used as templates
-  print('\n\n#####\nInput template: \033[31m{0}\033[0m\n\n'.format(template_list))
-  Tmpl_List = remove_remark(file_handle(template_list))
-  print('\n  \033[34m# The following PDBs will be used as templates:\033[0m '+template_list)
+  Tmpl_List = pd.read_csv(template_list, comment='#', sep='\s+', header=None).iloc[:,0].to_numpy()
+  print('\n\033[34m## The following PDBs will be used as templates:\033[0m\n'+template_list)
   print(Tmpl_List)
   print('\n')
 
-  # When 'KinaseStructInput' is 'None', substitute with 'best_match_struc'
-  if re.search(r'None', tget_pdb, re.IGNORECASE):
-    print('\n  > \033[34m#1# INFO:\033[0m "KinaseStructInput" is "None", use best matching structure: '+mdl_output_pref)
-    tget_pdb = best_match_struc
 
   # Generate '_TEMP.{x}.y1.fasta' as intermediate, will check for percent
   # identity. This is also the insert point for corrected fasta if alignment
@@ -139,31 +137,23 @@ def ModellerMultiAlignGen(  fasta_database, kinase_profile, pdb_directory,
   # it is corrected and need to maintain the exact format, no alignment will
   # be done to the corrected fasta
   # Convert the intermediate/corrected fasta to '_TEMP.{x}.y2.fasta'
-  sig = None
-  if not correct_fasta:
-    print(' >  \033[34m#1#: INFO:\033[0m Running with normal "_TEMP.{0}.y1.fasta": {0}'.format(mdl_output_pref))
-    sig = AlignSequences( Database, NoGapDB, pdb_directory, Tmpl_List, 
-                          tget_pdb, mdl_prot_fasta, best_match_struc,
-                          pc_ident, align_switch, mdl_pir_file, mdl_output_pref )
+  if re.search('None', correct_fasta, re.IGNORECASE):
+    print('\033[34m## Running with Normal \033[31m"_TEMP.{0}.y1.fasta"\033[0m'.format(mdl_output_pref))
+    AlignSequences( Database, NoGapDB, kinome_database, pdb_directory, Tmpl_List, 
+                    tget_pdb, mdl_prot_fasta, best_match_struc,
+                    pc_ident, align_switch, mdl_pir_file, mdl_output_pref )
   else:
-    print('  > \033[31m#1#: INFO:\033[0m Running with corrected "_TEMP.{0}.y1.corr.fasta": {0}'.format(mdl_output_pref))
-    CleanFASTAName( '_TEMP.{0}.y1.corr.fasta'.format(mdl_output_pref),
-                    work_directory, mdl_pir_file )
-#    TemplYCheck( tget_pdb.split('/')[-1].split('.')[0], 
-#                 mdl_pir_file.split('.pir')[0],
-#                 '_TEMP.{0}.y2.fasta'.format(mdl_output_pref),
-#                 pc_ident, align_switch )
+    print('\033[31m## Running with CORRECTED Fasta file:\n\033[31m{0}\033[0m'.format(correct_fasta))
+    CleanFASTAName( correct_fasta, work_directory, mdl_pir_file )
 
-  if sig is None:
-    BuildTemplatePDB(pdb_directory, Tmpl_List, tget_pdb, chimera_tmpl_list)
+  BuildTemplatePDB(pdb_directory, Tmpl_List, tget_pdb, chimera_tmpl_list)
 
-    # Generate the Modeller .pir file from alignment .fasta file
-    GenerateModellerAlignmentFile(mdl_pir_file, mdl_output_pref)
-  
-    print('\n## Check the Target FASTA to make sure starting and ending\n##  residues, and missing loops are accounted for.\n##  Check the presence of phospho- or unnatural amino acid residue.\n')
+  # Generate the Modeller .pir file from alignment .fasta file
+  GenerateModellerAlignmentFile(mdl_pir_file, mdl_output_pref)
 
-    for fasta in SeqIO.parse('_TEMP.corrected.fasta', 'fasta'):
-      print(fasta.format('fasta'))
+  print('\n## Check the Target FASTA to make sure starting and ending\n##  residues, and missing loops are accounted for.\n##  Check the presence of phospho- or unnatural amino acid residue.\n')
+  for fasta in SeqIO.parse('_TEMP.corrected.fasta', 'fasta'):
+    print(fasta.format('fasta'))
 
 
 
@@ -174,12 +164,13 @@ def GenerateModellerAlignmentFile( mdl_pir_file, mdl_output_pref ):
   # Read in the multiple sequence alignment file generated by TCoffee
   # with the last PDB as the Model kinase
   ali_prefix = mdl_pir_file.split('.pir')[0]
-  print('\n  \033[34m## Converting alignment .fasta to .pir:\033[0m {0}'.format(ali_prefix))
+  print('\n\033[34m## Converting alignment .fasta to .pir:\033[0m\n{0}'.format(ali_prefix))
 
 
-  ## Read all templates + target Fasta and format them the same way 
+  ## Read all templates + matched base + target Fasta and format them the same way 
   Templ = []
   for item in list(SeqIO.parse(ali_prefix+'.fasta', 'fasta')):
+    print('\033[31min generatemodelleralignment \033[0m',item.id)
     temp = item.id.split()[0]    # Expresso fasta format contains extra element
     flnm = '>P1;chimera_'+temp
     pdb_id = flnm.split(';')[1].rstrip()
@@ -194,11 +185,12 @@ def GenerateModellerAlignmentFile( mdl_pir_file, mdl_output_pref ):
     struct = '\nstructureX:{0}:{1}:{2}:LAST:{2}:{0}::-1.00:-1.00\n'.format(
                     pdb_id, resi, chan)
     Templ.append([flnm, struct, str(item.seq)])
+
   # Pop out Target Fasta ([-1]) and Base (best-fit [-2] from imported Fasta file
   Target = Templ.pop(-1)
   Base   = Templ.pop(-1)
 
-
+  print(Base)
   ## Write out partially-prepared Modeller file (*.pir.prep)from alignment file
     # First write out the chimera-template Fasta. Alter the header lines for
     # the Target Fasta and append to last of the file
@@ -242,57 +234,53 @@ def GenerateModellerAlignmentFile( mdl_pir_file, mdl_output_pref ):
 ##########################################################################
 ## Call T-Coffee to perform multiple sequence alignment
 ## For each crystal-FASTA, do clustalo to correct for the missing loops
-def AlignSequences( Database, NoGapDB, pdb_directory, Tmpl_List, 
+def AlignSequences( Database, NoGapDB, kinome_database, pdb_directory, Tmpl_List, 
                     tget_pdb, mdl_prot_fasta, best_match_struc,
                     pc_ident, align_switch, mdl_pir_file, mdl_output_pref ):
 
   ali_prefix = mdl_pir_file.split('.pir')[0]
 
 #######################
+
   ## Place Template proteins in the beginning of the .pir file; all with gaps
   Seq  = []
   for tmpl_name in Tmpl_List:
     tmpl_id = tmpl_name.split('.')[0]
     print('  \033[34m** Template Protein:\033[0m '+tmpl_id)
-    # Get the template kinase sequence from Database
-    with open('_TEMP.tmpl-gap.fasta', 'w') as tg:
-      SeqIO.write(Database[tmpl_id], tg, 'fasta')
-    with open('_TEMP.tmpl-pdb.fasta', 'w') as tp:
-      tp.write('>{0}\n{1}'.format(tmpl_id,
-                  str(FASTA_Gen(pdb_directory+'/'+tmpl_name, tmpl_id)) ))
 
-    # tmpl_pdb has 
-    tmpl_pdb = MuscleProfileAlign('_TEMP.tmpl-gap.fasta','_TEMP.tmpl-pdb.fasta',
-                                  '_TEMP.x1.fasta')
-    Seq.append('>{0}\n{1}\n'.format(tmpl_id, tmpl_pdb.seq))
+    # Get the (already aligned) fasta sequence of kinase templates from Database
+    Seq.append( '>{0}\n{1}\n'.format(tmpl_id, Database[tmpl_id].seq) )
 
-######################
+#####################
   ## Establish a gapped alignment of "Base" kinase for later structure building.
   ## Append Base (best-fit) structure for model building. If 'tget_pdb' is 
   ## manually supplied, use it. If found through searching, use 'best_pdb_id'
 
-  pdb_id = tget_pdb.split('/')[-1].split('.')[0]    # PDB_ID from file name
-  print('\n  \033[34m** Target Protein:\033[0m '+pdb_id)
-
-  # Kinase sequence from the closest selected PDB structure
-  with open('_TEMP.tget-pdb.fasta', 'w') as tg:
-    tg.write('>{0}\n{1}'.format(pdb_id, str(FASTA_Gen(tget_pdb, pdb_id))))
+  pdb_id      = tget_pdb.split('/')[-1].split('.')[0]    # input PDB_ID from filename
+  best_pdb_id = best_match_struc.split('/')[-1].split('.')[0] # Best match ID from filename
+  print('\n  \033[34m** Target kinase:\033[0m       '+pdb_id)
+  print('  \033[34m** Best matched kinase:\033[0m '+best_pdb_id)
 
   # Canonical kinase sequence from Database
-  best_pdb_id = best_match_struc.split('/')[-1].split('.')[0]
   with open('_TEMP.best-gap.fasta', 'w') as db:
     SeqIO.write(Database[best_pdb_id], db, 'fasta')
 
-  ## ** best_gap - GES  
-  base_pdb = MuscleProfileAlign('_TEMP.best-gap.fasta', '_TEMP.tget-pdb.fasta',
-                                '_TEMP.x2.fasta')
-  Seq.append('>{0}\n{1}\n'.format(pdb_id, str(base_pdb.seq)))
-  print(' > base_pdb.seq: '+pdb_id)
-  print(' > tget_pdb.seq: '+tget_pdb+'\n')
+  # Check if kinase structure exist in database; if not, do alignment to best-match seq
+  if pdb_id in Database:
+    base_seq = Database[pdb_id]
+  else:
+    with open('_TEMP.tget-pdb.fasta', 'w') as tg:
+      tg.write('>{0}\n{1}'.format(pdb_id, str(FASTA_Gen(tget_pdb, pdb_id))))
 
-  ## xx base-gap - xx
-  with open('_TEMP.base-gap.fasta', 'w') as db:
-    SeqIO.write(base_pdb, db, 'fasta')
+    base_seq = MuscleProfileAlign('_TEMP.best-gap.fasta', '_TEMP.tget-pdb.fasta',
+                                  '_TEMP.x2.fasta')
+    if len(base_seq.seq) != len(Database[best_pdb_id].seq):
+      sys.exit('  \033[34mERROR: MUSCLE alignment of input PDB failed with wrong length (_TEMP.x2.fasta): \033[0m'+tget_pdb)
+
+  print(' \033[31m> base_seq:\033[0m '+base_seq.id)
+
+  # Append the Matched Base kinase sequence to the end of list of template kinase
+  Seq.append('\n>{0}\n{1}\n'.format(base_seq.id, base_seq.seq))
 
 ########################
 
@@ -303,58 +291,65 @@ def AlignSequences( Database, NoGapDB, pdb_directory, Tmpl_List,
   # Check if phospho- or unnatural amino acid is in the PDB
   CheckUnnaturalAA(tget_pdb, pdb_id)
 
+#######################
   ## First, check if incoming PDB 'tget_pdb' is a known structure by inquiring
   ## Database. If exists, it should be the best-matching template. Do single-
   ## seq MUSCLE-profile alignment to map incoming sequence to this best template
   ## and generate templates-included alignment FASTA file
 
-  # Do single-seq MUSCLE-profile alignment
-  if os.path.isfile(mdl_prot_fasta):
+  # check if input fasta a file and if a known seq in the database
+  if not os.path.isfile(mdl_prot_fasta):
+    # if 'mdl_prot_fasta' is not Fasta file and is an ID in Database
+    if mdl_prot_fasta in Database:
+      print('\n \033[34m** FASTA input is known ID -- use FASTA in database:\033[0m '+mdl_prot_fasta)
+      tget_seq = Database[mdl_prot_fasta]
+    else:
+    # If not input FASTA file, get fasta from input structure, then profile align
+      print('\n \033[34m** FASTA input is "None" -- use Input Kinase Structure for FASTA:\033[0m '+tget_pdb)
+      tget_seq = base_seq
+  else:
     print('\n  \033[34m** FASTA input is a file:\033[0m \n'+mdl_prot_fasta+'\n')
+    mdl_id = mdl_prot_fasta.split('/')[-1].split('.')[0]
+    tget_seq = list(SeqIO.parse(mdl_prot_fasta, 'fasta'))[0]
+    tget_seq.id = mdl_id
+    print('\033[34m> input fasta seq length:\033[0m '+str(len(tget_seq.seq)))
+    if len(tget_seq.seq) == len(base_seq.seq):
+      print('  \033[31m> Input FASTA file appears to be pre-aligned to MD-kinome seq with equal length:\033[0m '+mdl_prot_fasta)
+    else:
+      # Do single-seq MUSCLE-profile alignment
+      print('  \033[31m> Input FASTA file length differs from length in Database. Do profile alignment for:\033[0m '+mdl_prot_fasta)
+      tget_seq = MuscleProfileAlign('_TEMP.best-gap.fasta', mdl_prot_fasta,
+                                    '_TEMP.x3.fasta')
 
-    ## ** mdl_prot_fasta GES
-    tget_ali = MuscleProfileAlign('_TEMP.best-gap.fasta', mdl_prot_fasta,
-                                  '_TEMP.x3.fasta')
-    tget_seq = tget_ali.seq
-    
-  # If no input FASTA file, get fasta from input structure, then profile align  
-  elif re.search(r'None', mdl_prot_fasta, re.IGNORECASE):
-    print('\n \033[34m** FASTA input is "None" -- use Input Kinase Structure for FASTA:\033[0m '+tget_pdb)
-    tget_seq = base_pdb.seq
-    
-  else:  # if 'mdl_prot_fasta' is not Fasta file but only PDB_ID in Database
-    print('\n \033[34m** FASTA input is PDB_ID -- use PDB_ID in database:\033[0m '+mdl_prot_fasta)
-    try:
-      tget_seq = Database[mdl_prot_fasta].seq
-    except IndexError:
-      sys.exit('\n  \033[34m> #2# INFO: Input "KinaseFasta" not found in "FastaDatabase":\033[0m '+mdl_prot_fasta)
+#####################
 
-  ##
-  Seq.append('\n>{0}\n{1}\n'.format(mdl_output_pref, str(tget_seq)))
+  # Append the target kinase sequence to a list of template sequence for later use
+  Seq.append('\n>{0}\n{1}\n'.format(mdl_output_pref, tget_seq.seq))
   with open('_TEMP.{0}.y1.fasta'.format(mdl_output_pref), 'w') as fo:
     for fasta in Seq:  fo.write(fasta)
 
   # Check if the alignment of target seq is different from template
-  if len(base_pdb.seq) != len(tget_seq):
-    x = '  base_pdb.seq: {0}\n'.format(len(base_pdb.seq))
-    x = x+('  tget_pdb.seq: {0}\n'.format(len(tget_seq)))
-    return (x+'  \033[31m> #4# FATAL: Alignment of Target seq to Template seq has different length:\033[0m '+mdl_output_pref)
+  # if checks out okay, convert the temp alignment file to full fasta file for use
+  if len(base_seq.seq) != len(tget_seq.seq):
+    x = '  base_seq.seq: {0}\n'.format(len(base_seq.seq))
+    x = x+('  tget_pdb.seq: {0}\n'.format(len(tget_seq.seq)))
+    sys.exit(x+'  \033[31m> #4# FATAL: Alignment of Target seq to Template seq has different length:\033[0m '+mdl_output_pref)
   else:
-    print('    - \033[34m#1# Okay:[033[0m len(base_pdb.seq) == len(tget_seq): '+str(len(tget_seq)))
+    print('    \033[34m- #1# Okay: len(base_seq.seq) == len(tget_seq):\033[0m '+str(len(tget_seq.seq)))
+    # Generates a full FASTA file for use later
     TemplYCheck(pdb_id, ali_prefix, '_TEMP.{0}.y1.fasta'.format(mdl_output_pref), 
-                pc_ident, align_switch)
-    return None
+                pc_ident, align_switch, kinome_database)
 
 
 ##########################################################################
 ## Convert _TEMP.y.fasta into the final form before converting into .pir
-def TemplYCheck( pdb_id, ali_prefix, fasta_to_pir, pc_ident, align_switch ):
+def TemplYCheck( pdb_id, ali_prefix, fasta_to_pir, pc_ident, align_switch, kinome_database ):
 
   # If target seq ident is lower than MUSCLE-to-EXPRESSO switching threshold
   if pc_ident < align_switch:
     print('  \033[31m> #1# WARNING:\033[0m {0} Input FASTA has low Identity to best match < 50%, use T_Coffee: {1}'.format(
-              ali_prefix, +pdb_id))
-    RunTCoffeeExpresso(fasta_to_pir, ali_prefix)
+              ali_prefix, pdb_id))
+    RunTCoffeeExpresso(fasta_to_pir, ali_prefix, kinome_database)
   else:
     RemoveFastaGapColumn(fasta_to_pir, ali_prefix+'.fasta')
 
@@ -369,15 +364,13 @@ def CleanFASTAName( fasta_file, work_directory, mdl_pir_file ):
   Data = []
 
   for fas in SeqIO.parse(fasta_file, 'fasta'):
-    itm = SeqRecord(  id=fas.id.split('/')[0], seq=fas.seq,
-                      description=fas.description, name=fas.name )
-    Data.append(itm)
+    Data.append( SeqRecord( id=fas.id.split('/')[0], seq=fas.seq,
+                      description=fas.description, name=fas.name ) )
 
   with open('{0}.y2.fasta'.format(name), 'w') as fo:
     SeqIO.write(Data, fo, 'fasta')
 
-  RemoveFastaGapColumn( '{0}.y2.fasta'.format(name),
-                        ali_prefix+'.fasta' )
+  RemoveFastaGapColumn( '{0}.y2.fasta'.format(name), ali_prefix+'.fasta' )
 
 
 ##########################################################################
@@ -386,10 +379,9 @@ def MissingLoopCorrection( pdb_id, full_seq, xtal_seq ):
 
   missing = len(full_seq) - len(xtal_seq)
 
-  print( ' * There are \033[34m{0:3d}\033[0m residues missing in {1} *'.format(missing, pdb_id))
+  print( '** There are \033[31m{0:3d}\033[0m residues missing in {1} **'.format(missing, pdb_id))
   with open('_TEMP.fasta', 'w') as w:
-    w.write('>{0}|full-seq\n{1}\n\n'.format(pdb_id, full_seq))
-    w.write('>{0}\n{1}'.format(pdb_id, xtal_seq))
+    w.write('>{0}|full-seq\n{1}\n\n>{0}\n{2}'.format(pdb_id, full_seq, xtal_seq))
 
   RunClustalO('_TEMP.fasta', '_TEMP.corrected')
   seq_record = list(SeqIO.parse('_TEMP.corrected.fasta', 'fasta'))
@@ -410,7 +402,7 @@ def MissingLoopCorrection( pdb_id, full_seq, xtal_seq ):
 ## https://www.dnastar.com/manuals/MegAlignPro/15.3/en/topic/muscle-alignment-options
 def MuscleProfileAlign( fasta_database, fasta_file, temp_file ):
 
-  os.system('muscle -profile -in1 "{0}" -in2 "{1}" -out "{2}" -maxiters 64 -seqtype protein -gapopen -5.0 -gapextend -2.0 -center 0.0 -quiet'.format(
+  os.system('muscle -profile -in1 "{0}" -in2 "{1}" -out "{2}" -maxiters 500 -seqtype protein -gapopen -5.0 -gapextend -2.0 -center 0.0 -quiet'.format(
               fasta_database, fasta_file, temp_file ) )
 
   Tget_List = list(SeqIO.parse(temp_file, 'fasta'))
@@ -419,11 +411,12 @@ def MuscleProfileAlign( fasta_database, fasta_file, temp_file ):
 
 
 #########################################################################
-## Basic setup for running T-coffee
-def RunTCoffeeExpresso( fasta_file, ali_prefix ):
+## Basic setup for running T-coffee Expresso / new use with 3d T-coffee
+def RunTCoffeeExpresso( fasta_file, ali_prefix, kinome_database ):
 
   fasta_name = fasta_file.split('.fasta')[0]
-  os.system('t_coffee -in "{0}" -output=fasta,clustalw,html -mode expresso -max_n_proc 10 -method=mafft_msa,t_coffee_msa,dialigntx_msa,muscle_msa,kalign_msa -email {1}'.format(fasta_file, 'pmung@umich.edu'))
+#  os.system('t_coffee -in "{0}" -output=fasta,clustalw,html -mode expresso -max_n_proc 10 -method=mafft_msa,t_coffee_msa,dialigntx_msa,muscle_msa,kalign_msa -email {1}'.format(fasta_file, 'pmung@umich.edu'))
+  os.system('t_coffee -in "{0}" -output=fasta,clustalw,html -template_file {1} -max_n_proc 10 -method=mafft_msa,t_coffee_msa,dialigntx_msa,muscle_msa,kalign_msa -email {2}'.format(fasta_file, kinome_database, 'pmung@umich.edu'))
   os.system('mv "{0}_aln" "{1}.fasta"'.format(fasta_file, ali_prefix))
   os.system('mv "{0}.html" "{1}.html"'.format(fasta_name, ali_prefix))
   os.system('mv "{0}.clustalw" "{1}.ali"'.format(fasta_name, ali_prefix))
@@ -440,6 +433,7 @@ def RemoveFastaGapColumn( fasta_input, fasta_output ):
 
 
 ##########################################################################
+## Align with Clustal Omega
 def RunClustalO( fasta_file, ali_prefix ):
   os.system('clustalo -i "{0}" -o "{1}.fasta" --full --force'.format(
               fasta_file, ali_prefix))
@@ -448,19 +442,20 @@ def RunClustalO( fasta_file, ali_prefix ):
 ##########################################################################
 ## Align crystal-FASTA to full-seq FASTA to detect missing loops in PDB
 def CacheSeqDatabase( fasta_database ):
-  print('\n  \033[34m## Caching sequence database:\033[0m '+fasta_database)
+  if type(fasta_database) is not list:
+    db_list = [fasta_database]
+  else:
+    db_list = fasta_database
+  print('\n  \033[34m## Caching sequence database:\033[0m\n',db_list)
   Database = {}
   Order    = []
-  Files    = fasta_database.split(',')
-  for name in Files:
-    handle   = file_handle(name)
-    for seq_record in SeqIO.parse(handle, 'fasta'):
-      idx    = seq_record.id
-      seq_id = idx.split('|')[0]
-      pdb_id = re.sub(':', '_', seq_id)
-      seq_record.id = re.sub(':', '_', idx)
+  for db_name in db_list:
+    for seq_record in SeqIO.parse(db_name, 'fasta'):
+      pdb_id = seq_record.id.split('/')[0].split('|')[0].replace(':','_')
+      seq_record.id = pdb_id
+      seq_record.description = ''
       Database[pdb_id] = seq_record
-      Order.append(idx)
+      Order.append(pdb_id)
   return Database, Order
 
 
@@ -468,12 +463,18 @@ def CacheSeqDatabase( fasta_database ):
 ## Use BioPython to generate FASTA sequence from PDB structure
 def FASTA_Gen( pdb_name, pdb_id ):
 
-  print(pdb_name)
-  m = PDBParser(PERMISSIVE=1).get_structure(pdb_id, pdb_name)
-  peptides = PPBuilder().build_peptides(m)
+  #print(pdb_name)
+  try:
+    m = PDBParser(PERMISSIVE=1).get_structure(pdb_id, pdb_name)
+    peptides = PPBuilder().build_peptides(m)
 
-  seq =''
-  for p in peptides: seq = seq + p.get_sequence()
+    seq = ''
+    for p in peptides:
+      seq = seq + p.get_sequence()
+  except FileNotFoundError:
+    print('\033[31m ERROR: PDB File not found: \033[0m'+pdb_name)
+    seq = None
+
   return seq
 
 
@@ -481,7 +482,7 @@ def FASTA_Gen( pdb_name, pdb_id ):
 ## Build tethered template PDB file for Modeller alignment/model generation
 def BuildTemplatePDB( pdb_directory, Tmpl_List, tget_pdb, chimera_tmpl_list ):
 
-  print('\n  \033[34m## Building Chimera PDB for homology modeling ##\033[0m')
+  print('\n\033[34m## Building Chimera PDB for homology modeling ##\033[0m')
 
   with open(chimera_tmpl_list, 'w') as w:
     for pdb_name in Tmpl_List:
@@ -504,12 +505,8 @@ def CheckUnnaturalAA( pdb_name, pdb_id ):
   for residue in m.get_residues():
     if AA(residue.get_resname()) == '':
       UAA.append(residue.get_resname())
-  print(' > Phospho- or unnatural amino acid, and ligand in Target PDB\033[31m {0}\033[0m:'.format(pdb_id))
+  print('\033[34m>> Phospho- or unnatural amino acid, and ligand in Target PDB\033[31m {0}\033[0m:'.format(pdb_id))
   print('{0}\n'.format(UAA))
 
 
 ##########################################################################
-#if __name__ == "__main__":
-#  ModellerMultiAlignGen( sys.argv[1], sys.argv[2], sys.argv[3], 
-#                         sys.argv[4], sys.argv[5], sys.argv[6], 
-#                         sys.argv[7], sys.argv[8])

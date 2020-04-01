@@ -14,7 +14,7 @@
 > #2# WARNING: Input sequence and template structure {0}.{1}
                have low sequence identity: {2:4.1f} %
                Choose another template structure that is a closer homolog to the target kinase
-               and with higher sequence identity (> {3}%)'.format(k_name, template_pdb, Data[0][2], ident_thres))
+               and with higher sequence identity (> {3}%)'.format(k_name, reference_pdb, Data[0][2], ident_thres))
 
 > #2# WARNING: Input sequence and template structure {0}.{1}: {4}
 > #2# WARNING: have low sequence identity: {2:4.1f} %
@@ -66,7 +66,7 @@
 
 > #1#: INFO: Running with corrected "_TEMP.{0}.y1.corr.fasta": {0}'.format(mdl_output_pref))
 
-> #2# INFO: Input "KinaseFasta" not found in "FastaDatabase": '+mdl_prot_fasta)
+> #2# INFO: Input "KinaseFasta" not found in "StructDatabase": '+mdl_prot_fasta)
 
 > #4# FATAL: Alignment of Target seq to Template seq has different length: '+mdl_output_pref)
 

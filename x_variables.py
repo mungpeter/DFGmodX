@@ -6,22 +6,26 @@ import re
 
 ####  !!Also check x_check_scripts.py to make sure all links are updated!! ####
 
-script_dir    = '/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx'
-dataset_dir   = script_dir+'/x_dataset'
-pymol_dir     = '/usr/bin/pymol'    # PyMOL executable
+script_dir    = '/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/'
+dataset_dir   = script_dir+'z_dataset/'
 
-stkinase_dir  = '/home/pmung/xxx_data/1_kinase/1_family/1_stkinase/170109/2_align'
-ykinase_dir   = '/home/pmung/xxx_data/1_kinase/1_family/2_ykinase/170109/2_align'
-kstruct_dirs  = stkinase_dir+','+ykinase_dir
+povme_exec    = '/home/software/POVME-2.1/POVME2.py'  # lagacy; integrated as python function
+pymol_exec    = '/usr/bin/pymol'    # PyMOL executable
+
+stkinase_dir  = '/home/pmung/Dropbox/1_kinase/1_family/1_stdkinases/170109/2_align/'
+#ykinase_dir   = '/home/pmung/zzz_data/1_kinase/1_family/2_ykinase/170109/2_align/'
+#kstruct_dirs  = stkinase_dir+','+ykinase_dir
 
 ident_thres   = 40.0  # seq iden threshold to switch to flag the sequence for check
-align_thres   = 50.0  # seq iden threshold to switch from MUSCLE to EXPRESSO alignment
+align_thres   = 5.0  # seq iden threshold to switch from MUSCLE to EXPRESSO alignment
 
-fasta_data    = dataset_dir+'/stdy_kinase.clean_3.180815.tcoffee_1d.fasta'
-kinase_profile= dataset_dir+'/stdy_kinase.clean_3.180815.tcoffee_1d.nogap.fasta'
+struct_database=dataset_dir+'stdy_kinase_xtal.all.200329.clean.fasta'
+struct_nogap  = dataset_dir+'stdy_kinase_xtal.all.200329.clean.nogap.fasta'
+kinome_database=dataset_dir+'MD_human_kinome_alignment.2019.200324.fasta'
+kinome_nogap  = dataset_dir+'MD_human_kinome_alignment.2019.200324.nogap.fasta'
 # T-coffee has a limiting issue with too long of path+filename, result in coredump
 
-template_pdb  = '1atp.pdb'
+reference_pdb = '1atp.pdb'
 superpose_resi= 'resi 122-139+162-183'  # C-lobe catalytic beta-sheet: 180709
 #superpose_resi= 'resi 126-181+205-305' # entire C-lobe minus activation-loop
 
@@ -31,8 +35,6 @@ superpose_resi= 'resi 122-139+162-183'  # C-lobe catalytic beta-sheet: 180709
 #superpose_resi= 'resi 122-127+154-175+180-183'	#C-lobe catalytic: 170810
 ## 170810 - ditch the short helix after hinge region and add helix after cata
 ##	    loop
-
-povme_dir     = '/home/software/POVME-2.1/POVME2.py'  # replaced as python function
 
 
 ##########################################################################
@@ -108,7 +110,8 @@ def TemplatePDBList ( conf ):
 
 
 ##########################################################################
-## CutSite templates for DFGmodel and N-/C-termini
+## CutSite templates for DFGmodel and N-/C-termini. This limits the size
+## of modeled structure to specifically the core catalytic domain only
 def NCTermTempls():
   NCCutsites = ['3KQ7:VPE|RY/FAQ|YH',   # (c-in,  d-out, st) p38a
                 '3NPC:VLK|RY/ITV|WY',   # (c-in,  d-out, st) jnk2
@@ -166,40 +169,42 @@ def DefaultVariables():
   Variables = {
     'ScriptDirectory'   : script_dir,
     'DatasetDirectory'  : dataset_dir,
-    'PymolExecutable'   : pymol_dir,
-    'POVMELocation'     : povme_dir,
+    'PymolExecutable'   : pymol_exec,
+    'POVMEExecutable'   : povme_exec,
     'HomeDirectory'     : home_dir,
     'ResultDirectory'   : home_dir+'/1_result',
     'WorkingDirectory'  : home_dir+'/0_tempfile',
     'POVMEDirectory'    : home_dir+'/0_tempfile/1_povme',
 
-    'FastaDatabase'     : fasta_data,
-    'KinaseProfile'     : kinase_profile,
+    'StructDatabase'    : struct_database,
+    'StructNoGap'       : struct_nogap,
+    'KinomeDatabase'    : kinome_database,
+    'KinomeNoGap'       : kinome_nogap,
     'PDBDirectory'      : stkinase_dir,
     'SuperposeRefResi'  : superpose_resi,
-    'TemplatePDB'       : template_pdb,
+    'ReferencePDB'      : reference_pdb,
     'SeqIdentThres'     : ident_thres,
     'AlignSwitchThres'  : align_thres,
-    'BestMatchStruc'    : '',
-    'SeqIdentity'       : '0',
-    'CorrectFASTAFile'  : False,
+    'BestMatchStruc'    : 'None',
+    'SeqIdentity'       : 'None',
+    'CorrectFASTAFile'  : 'None',
 
-    'OutputPrefix'      : 'cido.4L43_L',                    # User input
-    'CHelixDFGModel'    : 'cido',
     'KinaseStructInput' : '???/4L43_A.1atp.pdb',
     'ModelKinaseFasta'  : 'e.g. 4L43_A',
-    'KinaseFamily'      : 'serine',
-    'NumberOfModel'     : '50',
-    'NumberOfTopModel'  : '10',
-    'NumberOfCPU'       : '10',
 
-    'TemplateList'      : '',                               # variable
-    'POVMETemplateFile' : '',                               # variable
-    'ChimeraTemplList'  : 'chimera_xprefix.list',           # variable
-    'ModifiedPIRFile'   : 'chimera_xprefix.pir',            # variable
-    'PymolAlignPrefix'  : 'xprefix.align',                  # variable
-    'AlignedModelList'  : 'xprefix.aligned_pdb.list',       # variable
-    'POVMEStructure'    : 'xprefix.multi_frame.pdb',        # variable
+    'OutputPrefix'      : 'cido.4L43_L',                    # variable
+    'CHelixDFGModel'    : 'cido',                           # variable
+    'KinaseFamily'      : 'serine',                         # variable
+    'NumberOfModel'     : '50',                             # variable
+    'NumberOfTopModel'  : '10',                             # variable
+    'NumberOfCPU'       : '10',                             # variable
+
+    'TemplateList'      : 'None',                           # variable
+    'ChimeraTemplList'  : '<conf>.<name>.chimera.list',     # variable
+    'ModifiedPIRFile'   : '<conf>.<name>.chimera.pir',      # variable
+    'PymolAlignPrefix'  : '<conf>.<name>.align',            # variable
+    'AlignedModelList'  : '<conf>.<name>.aligned_pdb.list', # variable
+    'POVMEStructure'    : '<conf>.<name>.multi_frame.pdb',  # variable
   }
   return Variables
 
@@ -220,4 +225,4 @@ def DefaultVariables():
 #   v11.0   18.04.06    include fasta cutsites for kinase conformations
 #   v12.0   18.04.08    separate running scripts to "x_variables_run.py"
 #   v13.    18.06.15    update fasta library and APE cut-sites
-#
+#   v14     20.03.12    add MD_human_kinome_alignment

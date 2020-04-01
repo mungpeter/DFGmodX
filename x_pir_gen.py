@@ -2,25 +2,26 @@
 
 import re,os,sys
 import tarfile
-from x_pir_multi_align import ModellerMultiAlignGen
+
 from x_pymol_alignment import PyMOLSuperpose
+from x_pir_multi_align import ModellerMultiAlignGen
 
 #####################################################################
   # Generate modified alignment file (.pir) for Modeller
 def GenerateAndModifyPIR(
-        script_directory, dataset_dir, home_directory, 
-        work_directory, result_directory,
-        fasta_database, kinase_profile, pdb_directory, template_list, 
-	template_pdb, superpose_resi, best_match_struc,
-        prot_struc_input, mdl_prot_fasta, 
+        script_directory, dataset_dir, home_directory,
+        work_directory, result_directory, pdb_directory,
+        struct_database, struct_nogap, kinome_database, kinome_nogap,
+        template_list, reference_pdb, superpose_resi, best_match_struc,
+        prot_struc_input, mdl_prot_fasta,
         pc_ident, align_switch, correct_fasta,
         chimera_tmpl_list, mdl_pir_file, mdl_output_pref, pymol_exec,
         Settings ):
 
-  Vars = ['FastaDatabase', 'KinaseProfile', 'PDBDirectory', 'TemplateList',
+  Vars = ['StructDatabase', 'StructNoGap', 'PDBDirectory', 'TemplateList',
           'OutputPrefix', 'KinaseStructInput', 'ModelKinaseFasta',
           'ChimeraTemplList', 'ScriptDirectory', 'DatasetDirectory',
-          'PyMOL']
+          'PymolExecutable']
 
   print('\n  -- Generating Alignment File --')
   for var in Vars:
@@ -36,26 +37,28 @@ def GenerateAndModifyPIR(
 
   os.chdir(work_directory)
 
-  with open('_TEMP.pdb.list', 'w') as fo:
-    fo.write(prot_struc_input)
-
   # align input structure to reference and redirect it
-  # if input kinase structure is 'None', will use best matching PDB as input
-  if not re.search(r'None', prot_struc_input, re.IGNORECASE):
-    tget_pdb = SuperposeStruct( dataset_dir, template_pdb, best_match_struc,
+  # When 'KinaseStructInput' is 'None', substitute with 'best_match_struc'
+  # if 'KinaseStructInput' is not 'None', superpose it to best matched structure
+  if re.search(r'None', prot_struc_input, re.IGNORECASE):
+    print('\n  > \033[34m#1# INFO:\033[0m "KinaseStructInput" is "None", use best matching structure: '+mdl_output_pref)
+    tget_pdb = best_match_struc
+  else:
+    with open('_TEMP.pdb.list', 'w') as fo:
+      fo.write(prot_struc_input)
+    tget_pdb = SuperposeStruct( dataset_dir, reference_pdb, best_match_struc,
                                 superpose_resi, prot_struc_input,
                                 '_TEMP.pdb.list', '_TEMP.struct_super',
                                 pymol_exec )
-  else:
-    tget_pdb = prot_struc_input
+
 
   print('  ** Running multiple template-target structure superposition **')
 
-  ModellerMultiAlignGen( fasta_database, kinase_profile, pdb_directory, 
-                         work_directory, template_list, tget_pdb, 
-                         mdl_prot_fasta, best_match_struc, 
-                         pc_ident, align_switch, correct_fasta,
-                         chimera_tmpl_list, mdl_pir_file, mdl_output_pref )
+  ModellerMultiAlignGen(  pdb_directory, work_directory,
+                          struct_database, struct_nogap, kinome_database, kinome_nogap,
+                          template_list, tget_pdb, mdl_prot_fasta,
+                          best_match_struc, pc_ident, align_switch, correct_fasta,
+                          chimera_tmpl_list, mdl_pir_file, mdl_output_pref )
 
   print('  ** Finished template-target structure superposition **')
 
@@ -75,7 +78,7 @@ def GenerateAndModifyPIR(
     print('### No such file: '+chimera_tmpl_list)
 
   os.system('cp {0} {1} {2}'.format(mdl_pir_file, chimera_tmpl_list,
-                       result_directory))
+                        result_directory))
   os.chdir(home_directory)
 
 
@@ -83,22 +86,22 @@ def GenerateAndModifyPIR(
 ## Superpose the input kinase PDB to reference 1atp to ensure consistency
 ## and redirect "tget_pdb" kinase structure to the aligned version in the 
 ## dfgmod working directory
-def SuperposeStruct( dataset_dir, template_pdb, best_match_struc,
+def SuperposeStruct( dataset_dir, reference_pdb, best_match_struc,
         superpose_resi, prot_struc_input, org_pdb_list, 
         pymol_align_pref, pymol_exec ):
 
   print('\n  ** Initiating Structure Superposition **')
 
-  PyMOLSuperpose( pymol_exec, dataset_dir+'/'+template_pdb, 
+  PyMOLSuperpose( pymol_exec, dataset_dir+'/'+reference_pdb, 
         best_match_struc, superpose_resi, org_pdb_list, 
         pymol_align_pref, '_TEMP.list', 1, 'mod.pdb' )
 
   # rename file; x_pymol_alignment.py will name the aligned structure file
   # to xxx.1atp.mod.pdb. Rename to xxx.1atp.pdb
   name = prot_struc_input.split('/')[-1].split('.')[0]
-  os.system('mv {0}.*mod.pdb {0}.{1}'.format(name, template_pdb))
+  os.system('mv {0}.*mod.pdb {0}.{1}'.format(name, reference_pdb))
 
-  return str(os.getcwd())+'/'+name+'.'+template_pdb
+  return str(os.getcwd())+'/'+name+'.'+reference_pdb
 
 
 ##########################################################################

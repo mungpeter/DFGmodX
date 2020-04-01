@@ -6,14 +6,18 @@ from Bio import SeqIO
 
 msg = '''
   > {0}
-\t[ kinase fasta ]\n\t[ model type: cidi|cido|codi|codo|wcd ]\n\t[ output folder ]
-\t[ -c: Check completion | -p: Copy Over ]\n'''.format(sys.argv[0])
+\t[ kinase fasta ]
+\t[ kinase-uniprot list ]
+\t[ model type: cidi|cido|codi|codo|wcd ]
+\t[ output folder ]
+\t[ -c: Check completion | -p: Copy Over ]\n
+\t kinase-uniprot: */3_DFGmodx/z_dataset/kinase_uniprot_id.txt
+'''.format(sys.argv[0])
 if len(sys.argv) != 5 : sys.exit(msg)
 
 ##########################################################################
-def main( fasta_database, model, out_fold, option ):
+def main( fasta_database, unip_list, model, out_fold, option ):
 
-  unip_list = '/home/pmung/Dropbox/9_scripts/3_program/structures/3_DFGmodx/x_dataset/kinase_unprot_id.txt'
   Uniprot = CollectUniProt(unip_list)
   Fasta   = [ fasta for fasta in SeqIO.parse(fasta_database, 'fasta') ]
 
@@ -74,6 +78,8 @@ def CollectUniProt( unip_list ):
     for l in fi:
       if re.search(r'^#', l):
         continue
+      if l.rstrip() is False:
+        continue
       x = l.rstrip().split()
       if len(x) != 2:
         x.append('NaN')
@@ -84,7 +90,7 @@ def CollectUniProt( unip_list ):
   
 ##########################################################################
 if __name__ == '__main__':
-  main( sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] ) 
+  main( sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5] ) 
 
 ##########################################################################
 #

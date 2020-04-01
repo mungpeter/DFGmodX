@@ -73,9 +73,9 @@ def ModifyPIR( PIRSequences, per_line, out_filename, mdl_output_pref ):
   #                   Item[4] (protein name)
   RefSeqs = {}
   Model   = []
-  print( '\n  Read-in {0} Sequences:'.format(len(PIRSequences)))
+  print( '\n## Read-in \033[31m{0}\033[0m PIR Sequences:'.format(len(PIRSequences)))
   for index, Item in enumerate(PIRSequences):
-    print(Item[0], str(Item[3]))
+    print(Item[0], '\t', str(Item[3]))
 
     # Extract model protein sequence for editing
     if re.search(r'sequence:', Item[1]): 
@@ -84,22 +84,28 @@ def ModifyPIR( PIRSequences, per_line, out_filename, mdl_output_pref ):
 
     # Extract reference sequences for referencing based on protein name
     for key in DFGCuts.keys():
-      if re.search(r'{0}'.format(key), Item[0]):
+      if re.search('{0}'.format(key), Item[0]):
         RefSeqs[key] = Item[2]
+
+#############
 
   if len(Model) == 0:
     sys.exit('\n  > #2# ERROR: No Model Sequence was found in .pir file: '+mdl_output_pref)
 
   # Found out the positions of DFG cut-sites in reference sequences
+  print('\n\033[34m## DFGCuts ##\033[0m\n', (DFGCuts.keys()))
+  print('\n\033[34m## RefSeqs ##\033[0m\n', (RefSeqs.keys()))
+
   DFGCutSites = FindCutSites(DFGCuts, RefSeqs, mdl_output_pref)
-  print('\n# DFG Cut-Site:\n', DFGCutSites)
+  print('\n\033[34m## Finding DFG Cut-Site position in reference column:\033[0m\n', DFGCutSites)
+
   if len(DFGCutSites) != 2: 
-    sys.exit('\n  > #2# ERROR: Require 2 DFG-CutSite references: {0} found in {1}: {2}'.format(
+    sys.exit('\n\033[31m  > #2# ERROR: Require 2 DFG-CutSite references: only {0} found in\033[0m\n{1}: {2}'.format(
                   len(DFGCutSites), RefSeqs.keys(), mdl_output_pref )) 
 
   NCTCutSites = FindCutSites(NCCuts, RefSeqs, mdl_output_pref)
   if len(NCTCutSites) != 2:
-    sys.exit('\n  > #2# ERROR: Require 2 NC-CutSite references: {0} found in {1}: {2}'.format(
+    sys.exit('\n\033[31m  > #2# ERROR: Require 2 NC-CutSite references: only {0} found in\033[30m\n{1}: {2}'.format(
                   len(NCTCutSites), RefSeqs.keys(), mdl_output_pref ))
 
   # Consistency check: compare 2 reference positions
@@ -125,10 +131,10 @@ def CutSiteTemplates( CutSites, txt ):
   for line in CutSites:
     Temp = line.split(':')
     Templs[Temp[0]] = list(Temp[1].split('/'))
-  print('\n  {0} {1} CutSite references are found:'.format(len(Templs), txt))
+  print('\n## \033[34m{0} {1}\033[0m CutSite references are found:'.format(len(Templs), txt))
 
   for templ in Templs: 
-    print(' * '+templ+' * ')
+    print(' \033[33m* '+templ+' * \033[0m')
     print(Templs[templ])
 
   return Templs
@@ -323,9 +329,9 @@ def FormatSeqForPrint( Fasta, Prints, per_line ):
 # For C-terminus, it is less important and some chains are shorter. Ignore C-ter
 def CutSiteCheck( CutSites, RefSeqs, txt, mdl_output_pref ):
 
-  print('\n  ## Using {0} {1} CuteSite references:'.format(len(CutSites), txt))
+  print('\n## Using \033[34m{0} {1}\033[0m CuteSite references:'.format(len(CutSites), txt))
   for key in RefSeqs:
-    print('\n  CutSite locations:')
+    print('\n- CutSite locations:')
     print(key, '=', CutSites)
 
   if txt == 'DFG':
@@ -349,7 +355,10 @@ def CheckPIR( seq_file, mdl_output_pref ):
   Temp = []
   new_set = False
   with open(seq_file, 'r') as fi:
-    for line in fi if line.rstrip():   # skip blank lines
+    for l in fi:   # skip blank lines
+      line = l.rstrip()
+      if re.search('##', line):
+        continue
       if line is False:
         continue
       if new_set:
@@ -372,13 +381,13 @@ def CheckPIR( seq_file, mdl_output_pref ):
     if re.search(r'>P1;', Prot[0]): 
       Seq.append(Prot[0])                           # Seq[0]
     else:
-      sys.exit('\n  > #2# ERROR: Missing "Header" for entry no.{0}: {1}'.format(
+      sys.exit('\n  > #2# ERROR: PIR file Missing "Header >P1;" for entry no.{0}: {1}'.format(
                       index+1, mdl_output_pref ) )
 
-    if re.search(r'(sequence:|structureX:)', Prot[1]):
+    if re.search('(sequence:|structureX:)', Prot[1]):
       Seq.append(Prot[1])                           # Seq[1]
     else:
-      sys.exit('\n  > #2# ERROR: Missing "Info Line" for entry no.{0}: {1}'.format(
+      sys.exit('\n  > #2# ERROR: PIR file Missing "Info sequence:" for entry no.{0}: {1}'.format(
                       index+1, mdl_output_pref ) )
 
     fasta = ''  

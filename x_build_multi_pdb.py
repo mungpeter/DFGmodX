@@ -23,7 +23,7 @@ msg = '''\n    > {0}\n        [List of PDB: .list] [Output PDB]
 def BuildMultiPDB( mdl_list, output_name ):
   with open(mdl_list, 'r') as fi, open(output_name, 'w') as fo:
     for idx, pdb in enumerate(fi):
-      print(' -- Write structure [{0}] into {1} --'.format(idx+1, output_name))
+      print(' -- Write structure [\033[31m{0}\033[0m] into \033[36m{1}\033[0m --'.format(idx+1, output_name))
       fo.write('MODEL {0}\n'.format(idx+1))
       handle = file_handle(pdb.rstrip())
       for line in handle: 

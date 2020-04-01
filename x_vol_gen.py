@@ -11,21 +11,21 @@ from x_build_multi_pdb import BuildMultiPDB
 # 
 def GeneratePOVMEAndSortModels(
         script_directory, home_directory, work_directory, result_directory,
-        povme_location, povme_directory, povme_template, povme_pdb,
+        povme_exec, povme_directory, povme_pdb,
         mdl_output_pref, number_of_cpu, conformation, top_model, Settings ):
 
-    Vars = ['POVMELocation', 'POVMEDirectory', 'OutputPrefix', 
-            'POVMEStructure', 'NumberOfCPU', 'NumberOfTopModel']
+    Vars = ['POVMEExecutable', 'POVMEDirectory', 'POVMEStructure',
+            'OutputPrefix', 'NumberOfCPU', 'NumberOfTopModel']
 
-    print('\n  -- Selection of Models --')
+#    print('\n  -- Selection of Models --')
     for var in Vars:
       if Settings[var] is None:
         sys.exit('\n  Error: \'{0}\' is not specified: {0}'.format(var))
 
 #################################################
 
-    print(os.getcwd(), '\n')
     os.chdir(work_directory)
+    print('\033[34m## Current working directory ##\033[0m\n', os.getcwd())
 
     #### Hard-coded variable
     aligned_mdl_list = mdl_output_pref+'.align_pdb.list'
@@ -47,14 +47,14 @@ def GeneratePOVMEAndSortModels(
     povme_sorted_file = '{0}.volumes.sorted.txt'.format(mdl_output_pref)
     RunPOVMEVolumes( 
         script_directory, work_directory, result_directory,
-        povme_location, povme_directory, povme_template, 
-        povme_pdb_name, povme_sorted_file, mdl_output_pref, 
+        povme_exec, povme_directory, povme_pdb_name, povme_sorted_file,
+        mdl_output_pref,
         number_of_cpu, conformation )
 
     ## Select top models based on binding site volume
     os.chdir(work_directory)
-    Model_Volumes = pd.read_csv(povme_sorted_file, sep='\s+', comment='#', header=None).to_numpy()
-    Model_List    = pd.read_csv(aligned_mdl_list, sep='\s+', comment='#', header=None).to_numpy()
+    Model_Volumes = pd.read_csv(povme_sorted_file, sep='\s+', comment='#', header=None).iloc[:,0].to_numpy()
+    Model_List    = pd.read_csv(aligned_mdl_list,  sep='\s+', comment='#', header=None).iloc[:,0].to_numpy()
 
     Top_Mdl_Names = []
     for idx in range(0, top_model):
@@ -63,7 +63,7 @@ def GeneratePOVMEAndSortModels(
       except IndexError:
         break
 
-    # Get the models with top 10 volume
+    # Get the models with volume ranked in the top x
     Top_mdl_Numbers = []
     with open('{0}.top{1}.list'.format(mdl_output_pref, top_model), 'w') as fo:
       for name in Top_Mdl_Names:
@@ -76,8 +76,7 @@ def GeneratePOVMEAndSortModels(
         Top_mdl_Numbers.append(tmp_name.split('.')[0])
       print(' -- Wrote {0}.top{1}.list --'.format(mdl_output_pref, top_model))
 
-    print('\n  *** Top number ***')
-    print(Top_mdl_Numbers)
+    print('\n  \033[34m*** Top numbers ***\033[0m\n',Top_mdl_Numbers)
 
     ## Build multi-model PDB for binding site volumes (all and top)
     os.chdir(povme_directory)
@@ -114,7 +113,7 @@ def GenerateMultiStruct(
         script_directory, work_directory, 
         mdl_list_input, povme_pdb_name, aligned_mdl_list ):
 
-  print('\n - Generate multi-frame model kinase PDB for POVME')
+  print('\n \033[34m-- Generate multi-frame model kinase PDB for POVME --\033[0m')
   if type(mdl_list_input) is list:    # option to input as list or *
     Model_List = mdl_list_input
   else:
@@ -122,7 +121,6 @@ def GenerateMultiStruct(
       Model_List = sorted(glob.glob(mdl_list_input))
     except IndexError:
       sys.exit('\n  > #2# ERROR: Cannot find structure to aggregate for POVME: {0}'.format(mdl_list_input))
-    print(' -- Models to be aggregated for POVME --\n{0}'.format(Model_List))
 
   ## Write a list of models to be aggregated.
   with open(aligned_mdl_list, 'w') as fo:
@@ -136,22 +134,24 @@ def GenerateMultiStruct(
 ## Calculate binding site volume for top model selection
 def RunPOVMEVolumes(
         script_directory, work_directory, result_directory,
-        povme_location, povme_directory, povme_template, 
-        povme_pdb_name, povme_sorted_file, mdl_output_pref, 
+        povme_exec, povme_directory, povme_pdb_name, povme_sorted_file,
+        mdl_output_pref,
         number_of_cpu, conformation ):
 
   Vars = [povme_pdb_name]
   for var in Vars:
-    if not os.path.isfile(var):
+    if os.path.isfile(var):
+      print('\n ** Using \033[31m{0}\033[0m for POVME **'.format(var))
+    else:
       sys.exit('\n  > #2# ERROR: Cannot find {0}: {1}'.format(var, mdl_output_pref))
 
   povme_setup_file = '{0}.povme_setup.in'.format(mdl_output_pref)
   GeneratePOVMEInputFile(
-        povme_template, povme_directory, povme_pdb_name, script_directory,
+        povme_directory, povme_pdb_name, script_directory,
         povme_setup_file, mdl_output_pref, number_of_cpu, conformation )
 
-  print('\n ** Using Python3 and POVME 2.1 **\n')
-#  os.system('python {0} {1}'.format(povme_location, povme_setup_file))
+  print(' ** Using \033[36mPython3\033[0m and \033[36mPOVME 2.1\033[0m **')
+#  os.system('python3 {0} {1}'.format(povme_exec, povme_setup_file))
   povme.RunPOVME(povme_setup_file)
 
   # Sort the models by order of volume (descending order)
@@ -168,9 +168,10 @@ def RunPOVMEVolumes(
 ##########################################################################
 ## Setup and modify POVME input file
 def GeneratePOVMEInputFile(
-        povme_template, povme_directory, povme_pdb_name, script_directory, 
+        povme_directory, povme_pdb_name, script_directory, 
         povme_setup_file, mdl_output_pref, number_of_cpu, conformation ):
 
+  print(' ** Using \033[34m{0}\033[0m paramters for \033[36mPOVME 2.1\033[0m **'.format(conformation))
   lines  = '## POVME 2.1 input file for conformation: {0} ##\n\n'.format(conformation)
   lines += 'OutputFilenamePrefix\t{0}/{1}.\n'.format(povme_directory, mdl_output_pref)
   lines += 'PDBFileName\t\t{0}/{1}\n'.format(povme_directory, povme_pdb_name)

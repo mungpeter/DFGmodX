@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-print(' ** x_modeller_parallel.py **')
-
 # Homology modeling with multiple templates
 from modeller import *              # Load standard Modeller classes
 from modeller.automodel import *    # Load the automodel class
 from modeller.parallel import *
 from CommonUtility import *
-import os,sys,glob
+import os,sys
 
 ##########################################################################
 msg = """\n  > python[or mod9.x] {0}
@@ -16,7 +14,10 @@ msg = """\n  > python[or mod9.x] {0}
         [number of model to generate]
         [number of CPU]
         [output prefix: same as 'target' in .pir]\n""".format(sys.argv[0])
-if len(sys.argv) != 6: sys.exit(msg)
+#if len(sys.argv) != 6: sys.exit(msg)
+
+print('\033[34m** x_modeller_parallel.py **\033[0m')
+print('\033[34m## Current directory:\033[0m\n{0}\n'.format(os.getcwd()))
 
 Templates = remove_remark(file_handle(sys.argv[1]))
 pir_file  = sys.argv[2]         # .pir file

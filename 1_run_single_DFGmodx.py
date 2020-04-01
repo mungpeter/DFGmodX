@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 
-import sys,os,re
-import shutil
-import pickle
-
-from x_pir_gen  import GenerateAndModifyPIR
-from x_check_scripts import CheckEssentFiles
-from x_modl_gen import GenerateAndAlignModeller
-from x_vol_gen  import GeneratePOVMEAndSortModels
-from x_variables_run import ParseInputVariables
-from x_variables_run import GenerateTemplSetupScript
-from x_homolog_templ_check import SearchKinaseStruct
-
+import sys
 msg = '''
     > {0}
         [ Setup Script: formatted setup file | Pickle ]\n
@@ -20,58 +9,107 @@ msg = '''
                 -mod    Run DFGmodel only
                 -vol    Select top models only
                 -set    Generate template setup script\n
+                -none   * use new paths in "x_variables"; Workstation -> HPC
       **# Always use -pir then -mod, and ALWAYS check .pir for additional chain
           breaks. Only use -full if you have checked the kinase and it has no
           additional chain break or missing residues\n
         [ Opt:   -force   Forced restart of /dfgworking directory ]
         [ Opt:   -restart Forced restart of /1_result   directory ]
-        [ Opt:   -pass    Pass along; always use this unless otherwise ]\n
+        [ Opt:   -pass    Pass along; always use this unless otherwise ]
+        [ Opt:   -paths   * Update directory paths in setup files; use with "-none" ]\n
       e.g. > {0} setup.file -pir -pass\n
 '''.format(sys.argv[0])
 if len(sys.argv) < 2 or len(sys.argv) > 4: sys.exit(msg)
 
+import os,re
+import shutil
+import pickle
+
+from x_variables import DefaultVariables
+from x_pir_gen import GenerateAndModifyPIR
+from x_check_scripts import CheckEssentFiles
+from x_pir_multi_align import CacheSeqDatabase
+from x_modl_gen import GenerateAndAlignModeller
+from x_variables_run import ParseInputVariables
+from x_vol_gen import GeneratePOVMEAndSortModels
+from x_variables_run import GenerateTemplSetupScript
+from x_homolog_templ_check import SearchKinaseStruct
+
 ##########################################################################
-def main(setting_file, running, **kwargs):
+def main( setting_file, running, **kwargs ):
 
   # Settings to run which function of DFGmodel
   pir, mod, vol = False, False, False
-  if re.search(r'-full', running):
+  if running == '-full':
     pir, mod, vol = True, True, True
-  elif re.search(r'-pir', running):
+  elif running == '-pir':
     pir = True
-  elif re.search(r'-mod', running):
+  elif running == '-mod':
     mod = True
     vol = True
-  elif re.search(r'-vol', running):
+  elif running == '-vol':
     vol = True
-  elif re.search(r'-set', running):
+  elif running == '-set':
     GenerateTemplSetupScript(setting_file)
     sys.exit('\n  Template setup script: {0}\n'.format(setting_file))
+  elif running == '-none':
+    print('')
   else:
     sys.exit('\n  Error: [Running Option] is not specified: {0}'.format(running))
 
-  # Variables of Settings
+  # Retreive Settings variables
   if re.search(r'.pkl', setting_file):
     Settings = pickle.load( open(setting_file, 'rb') )
   else:
     Settings = ParseInputVariables(setting_file)
 
-  script_directory = Settings['ScriptDirectory']# Directory with all the scripts
-  dataset_dir      = Settings['DatasetDirectory']# Directory with all the datasets
-  home_directory   = Settings['HomeDirectory']  # Current directory
+  ## Use only when transfer from workstation to HPC; update directory paths
+  if running == '-none':
+    New = DefaultVariables()
+    Settings['ScriptDirectory']  = New['ScriptDirectory']
+    Settings['DatasetDirectory'] = New['DatasetDirectory']
+    Settings['PymolExecutable']  = New['PymolExecutable']
+    Settings['HomeDirectory']    = New['HomeDirectory']
+    Settings['ResultDirectory']  = New['ResultDirectory']
+    Settings['WorkingDirectory'] = New['WorkingDirectory']
+    Settings['POVMEDirectory']   = New['POVMEDirectory']
+    Settings['StructDatabase']   = New['StructDatabase']
+    Settings['StructNoGap']      = New['StructNoGap']
+    Settings['KinomeDatabase']   = New['KinomeDatabase']
+    Settings['KinomeNoGap']      = New['KinomeNoGap']
+    Settings['PDBDirectory']     = New['PDBDirectory']
+
+    best_struct = Settings['BestMatchStruc'].split('/')[-1]
+    New['BestMatchStruc'] = Settings['PDBDirectory']+best_struct
+    Settings['BestMatchStruc']   = New['BestMatchStruc']
+
+    templ_list  = Settings['TemplateList'].split('/')[-1]
+    New['TemplateList']  = Settings['DatasetDirectory']+templ_list
+    Settings['TemplateList']     = New['TemplateList']
+
+
+  script_directory = Settings['ScriptDirectory']  # Directory with all the scripts
+  dataset_dir      = Settings['DatasetDirectory'] # Directory with all the datasets
+  home_directory   = Settings['HomeDirectory']    # Current directory
   work_directory   = Settings['WorkingDirectory'] # Working directory
   result_directory = Settings['ResultDirectory']  # Result directory
 
-  fasta_database   = Settings['FastaDatabase']  # all-structure alignment database
-  kinase_profile   = Settings['KinaseProfile']  # kinase profile 99% redundancy
-  pdb_directory    = Settings['PDBDirectory']   # PDB structure directory
-  template_list    = Settings['TemplateList']   # List of C-helix/DFG templates
+  struct_database  = Settings['StructDatabase']   # all-structure alignment fasta database
+  struct_nogap     = Settings['StructNoGap']      # all-structure no-gap fasta database
+  kinome_database  = Settings['KinomeDatabase']   # aligned canonical human kinome seq database
+  kinome_nogap     = Settings['KinomeNoGap']      # no-gap canonical human kinome seq database
+  pdb_directory    = Settings['PDBDirectory']     # PDB structure directory
+  template_list    = Settings['TemplateList']     # List of C-helix/DFG templates
   superpose_resi   = Settings['SuperposeRefResi'] # reference residue superpose
-  seq_ident_thres  = Settings['SeqIdentThres']  # threshold to flag seq alignment
+  seq_ident_thres  = Settings['SeqIdentThres']    # threshold to flag seq alignment
   align_switch     = Settings['AlignSwitchThres'] # switch from MUSCLE to EXPRESSO
-  conformation     = Settings['CHelixDFGModel'] # conformation to generate
+  conformation     = Settings['CHelixDFGModel']   # conformation to generate
 
-  # Create .pir alignment file
+  povme_directory  = Settings['POVMEDirectory']   # Directory to temp folder
+  pymol_exec       = Settings['PymolExecutable']  # pymol executable
+  reference_pdb    = Settings['ReferencePDB']    # Reference PDB for superpose
+
+  # Create .pir alignment file for running
   prot_struc_input = Settings['KinaseStructInput']# Name of model kinase
   mdl_prot_fasta   = Settings['ModelKinaseFasta'] # fasta of model kinase
   chimera_tmpl_list= Settings['ChimeraTemplList'] # Name of tether chimera file
@@ -80,30 +118,25 @@ def main(setting_file, running, **kwargs):
   pc_ident         = Settings['SeqIdentity']      # best match sequence identity
 
   # Running Modeller and superpose models
-  mdl_pir_file     = Settings['ModifiedPIRFile'] # PIR file for Modeller
-  number_of_model  = Settings['NumberOfModel']  # Number of model to generate
-  number_of_cpu    = Settings['NumberOfCPU']    # Number of CPU to use
-  mdl_output_pref  = Settings['OutputPrefix'] # Prefix of generated models
-  pymol_exec       = Settings['PymolExecutable'] # pymol executable
+  mdl_pir_file     = Settings['ModifiedPIRFile']  # PIR file for Modeller
+  number_of_model  = Settings['NumberOfModel']    # Number of model to generate
+  number_of_cpu    = Settings['NumberOfCPU']      # Number of CPU to use
+  mdl_output_pref  = Settings['OutputPrefix']     # Prefix of generated models
 
   # Ranking models based on POVME volume calculation
-  povme_location   = Settings['POVMELocation']  # Directory of POVME software
   top_model        = Settings['NumberOfTopModel'] # Number of selected model
-  povme_pdb        = Settings['POVMEStructure'] # Name of multi-struct protein
-  povme_directory  = Settings['POVMEDirectory'] # Directory to temp folder
-  povme_template   = Settings['POVMETemplateFile'] # Template POVME setup file
-
-  template_pdb     = Settings['TemplatePDB']  # Template PDB for superpose
+  povme_exec       = Settings['POVMEExecutable']  # Directory of POVME software
+  povme_pdb        = Settings['POVMEStructure']   # Name of multi-struct protein
 
 #################################################
 
   # Check presence of critical files before running
-  CheckEssentFiles(script_directory, dataset_dir, Settings)
+#  CheckEssentFiles(script_directory, dataset_dir, Settings)
 
   # Check presence of pre-existing result folder
   if   option == '-restart':
     if os.path.isdir(result_directory):
-      print( '\n  ** Found [ResultDirectory] **\n    {0}\n     Forced removal of old directory **'.format(result_directory))
+      print( '\n  ** Found [ResultDirectory] **\n    {0}\n     Forced removal of old directory'.format(result_directory))
       shutil.rmtree(result_directory)   # Remove the existing directory
     if os.path.exists(work_directory):
       print( '\n  ** Found [WorkingDirectory] **\n   {0}\n     Forced removal of old directory'.format(work_directory))
@@ -119,8 +152,16 @@ def main(setting_file, running, **kwargs):
       print( '\n  ** Found [ResultDirectory] **\n    {0}\n     Ignore and proceed'.format(result_directory))
     if os.path.exists(work_directory):
       print( '\n  ** Found [WorkingDirectory] **\n    {0}\n     Ignore and proceed'.format(work_directory))
+  elif option == '-paths':
+      print( '\n\033[33m  ** Just redo the setup file with directory paths; no change to existing files **\033[0m')
+      ## update the setup files
+      pickle.dump( Settings, open( "SetupVars.pkl", "wb" ) )
+      with open(setting_file, 'w') as fo:
+        for key in Settings.keys():
+          fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
+      sys.exit()
   else:
-      sys.exit('\n  Warning: Invalid Option: -restart | -force | -pass')
+      sys.exit('\n  \033[31mERROR: Invalid Option ( -restart | -force | -pass | -paths ):\033[0m '+option)
 
 
   if not os.path.isdir(work_directory):
@@ -130,45 +171,53 @@ def main(setting_file, running, **kwargs):
 
 
 ##########################################################################
+  
   # Generate modified alignment file (.pir) for Modeller
   # with structure search
   if pir:
+
     # If "KinaseStructInput" is "None" (not supplied), trigger the search for
-    # kinase structure with highest sequence identity within the internal struct
+    # *Kinase Structure* with highest sequence identity within the internal struct
     # library, and use it in the subsequent runs
     if re.search(r'None', prot_struc_input, re.IGNORECASE) and re.search(r'None', mdl_prot_fasta, re.IGNORECASE):
       sys.exit('\n  > #2# ERROR: Both "KinaseStructInput" and "ModelKinaseFasta" are "None: '+mdl_output_pref)
-    elif not correct_fasta:  
+    elif re.search('None', correct_fasta, re.IGNORECASE):
+      # return matched PDB file, and its percent identity
       best_match_struc, pc_ident = SearchKinaseStruct(
           script_directory, home_directory, work_directory, result_directory,
-          pdb_directory, kinase_profile, seq_ident_thres, template_pdb,
-          mdl_prot_fasta, Settings )
+          pdb_directory, struct_nogap, kinome_nogap,
+          seq_ident_thres, reference_pdb, mdl_prot_fasta, Settings )
       Settings['BestMatchStruc'] = best_match_struc
       Settings['SeqIdentity']    = pc_ident
+
+      ## update the setup files
       pickle.dump( Settings, open( "../SetupVars.pkl", "wb" ) )
+      with open(setting_file, 'w') as fo:
+        for key in Settings.keys():
+          fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
 
 
     # if template_list is > 1 (CODI), run the subconformations in iterations
     if type(template_list) is not str:
       for idx, template in enumerate(template_list):
         GenerateAndModifyPIR(
-            script_directory, dataset_dir, home_directory, 
-            work_directory, result_directory,
-            fasta_database, kinase_profile, pdb_directory, template,
-            template_pdb, superpose_resi, best_match_struc,
-            prot_struc_input, mdl_prot_fasta, 
+            script_directory, dataset_dir, home_directory,
+            work_directory, result_directory,pdb_directory,
+            struct_database, struct_nogap, kinome_database, kinome_nogap,
+            template, reference_pdb, superpose_resi, best_match_struc,
+            prot_struc_input, mdl_prot_fasta,
             pc_ident, align_switch, correct_fasta,
-            chimera_tmpl_list+'.'+str(idx+1), mdl_pir_file+'.'+str(idx+1), 
+            chimera_tmpl_list+'.'+str(idx+1), mdl_pir_file+'.'+str(idx+1),
             mdl_output_pref+'.'+str(idx+1), pymol_exec, Settings )
     else:
       GenerateAndModifyPIR(
-          script_directory, dataset_dir, home_directory, 
-          work_directory, result_directory,
-          fasta_database, kinase_profile, pdb_directory, template_list,
-          template_pdb, superpose_resi, best_match_struc,
-          prot_struc_input, mdl_prot_fasta, 
+          script_directory, dataset_dir, home_directory,
+          work_directory, result_directory, pdb_directory,
+          struct_database, struct_nogap, kinome_database, kinome_nogap,
+          template_list, reference_pdb, superpose_resi, best_match_struc,
+          prot_struc_input, mdl_prot_fasta,
           pc_ident, align_switch, correct_fasta,
-          chimera_tmpl_list, mdl_pir_file, 
+          chimera_tmpl_list, mdl_pir_file,
           mdl_output_pref, pymol_exec, Settings )
 
 
@@ -181,17 +230,18 @@ def main(setting_file, running, **kwargs):
       for idx in range( len(template_list) ):
         GenerateAndAlignModeller(
             script_directory, home_directory, work_directory, result_directory,
-            chimera_tmpl_list+'.'+str(idx+1), mdl_pir_file+'.'+str(idx+1), 
-            number_of_model,
-            number_of_cpu, mdl_output_pref+'.'+str(idx+1),
-            template_pdb, best_match_struc, superpose_resi,
+            chimera_tmpl_list+'.'+str(idx+1), mdl_pir_file+'.'+str(idx+1),
+            number_of_model, number_of_cpu,
+            mdl_output_pref+'.'+str(idx+1),
+            reference_pdb, best_match_struc, superpose_resi,
             pymol_exec, Settings )
     else:
       GenerateAndAlignModeller(
           script_directory, home_directory, work_directory, result_directory,
-          chimera_tmpl_list, mdl_pir_file, number_of_model,
-          number_of_cpu, mdl_output_pref,
-          template_pdb, best_match_struc, superpose_resi,
+          chimera_tmpl_list, mdl_pir_file,
+          number_of_model, number_of_cpu,
+          mdl_output_pref,
+          reference_pdb, best_match_struc, superpose_resi,
           pymol_exec, Settings )
 
 
@@ -202,15 +252,16 @@ def main(setting_file, running, **kwargs):
       for idx in range( len(template_list) ):
         GeneratePOVMEAndSortModels(
             script_directory, home_directory, work_directory, result_directory,
-            povme_location, povme_directory,
-            povme_template, povme_pdb,
-            mdl_output_pref+'.'+str(idx+1), number_of_cpu, conformation, 
+            povme_exec, povme_directory, povme_pdb,
+            mdl_output_pref+'.'+str(idx+1),
+            number_of_cpu, conformation,
             int(top_model), Settings )
     else:
       GeneratePOVMEAndSortModels(
           script_directory, home_directory, work_directory, result_directory,
-          povme_location, povme_directory, povme_template, povme_pdb,
-          mdl_output_pref, number_of_cpu, conformation, 
+          povme_exec, povme_directory, povme_pdb,
+          mdl_output_pref,
+          number_of_cpu, conformation,
           int(top_model), Settings )
 
 
@@ -233,10 +284,11 @@ if __name__ == "__main__":
 #   v3.0    16.06.07    added C-out modeling option -depreciated
 #   v4.0    16.08.10    superpose residues come from global variables
 #   v5.0    16.11.25    check homolog template for kinase with only sequence
-#   v6.0    16.11.27	search for closest structure if no supplied
+#   v6.0    16.11.27    search for closest structure if no supplied
 #   v7.0    16.12.05    integrate CheckHomologTemplate to SearchKinaseStruct
 #   v8.0    18.03.06    allow modeling for multiple types of conformations,
 #                       and multiple subconformations for CODI and wCD
 #   v9.0    18.03.28    change the 'setting_file' to accept pre-defined Dict
-#
+#   v10     20.03.21    adopt alignment to kinome MSA profile, detect if input
+#                       fasta is already aligned and then skip MUSCLE alignment 
 #

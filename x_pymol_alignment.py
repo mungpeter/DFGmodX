@@ -25,7 +25,7 @@ from CommonUtility import *
 #   v6.1    -- 17.06.13 - if no badly aligned structure, skip realignment
 #   v7.0    -- 17.07.11 - made into non-callable OOP
 #   v8.0    -- 18.06.10 - added best_match structure
-#   v9.0    -- 19.12.28   this version came from 3_DFGmodx, new output extension
+#   v9.0    -- 19.12.28   this version came from 3_DFGmodx, new output extension#   v9.1    -- 20.02.27   search "Executive: RMS" for both PyMOL 1.x/2.x
 #
 #   Purpose: Generate a pymol session file that contains the Template 
 #   PDB and the model PDBs. The models are superposed onto the Template
@@ -49,11 +49,11 @@ msg = """
 
 
 ##########################################################################
-def PyMOLSuperpose( pymol_exec, template_pdb, best_match_struc, 
+def PyMOLSuperpose( pymol_exec, reference_pdb, best_match_struc, 
                     superpose_resi, org_pdb_list, pymol_align_pref, 
                     aligned_mdl_list, number_of_model, out_pdb_ext ):
 
-  print('  ** PyMOL Structure Superposition **')
+  print('  \033[34m** PyMOL Structure Superposition **\033[0m')
 
   # Digit (X) of model number in the Modeller-generated models
   # (50)=2,(500)=3      B9999000XX (2 digits), B999900XXX (3 digits)
@@ -64,7 +64,7 @@ def PyMOLSuperpose( pymol_exec, template_pdb, best_match_struc,
 
   ## Align models to reference structure using 'superimpose'
   AlignStructures(  pymol_exec, aligned_mdl_list, pymol_align_pref, 
-                    template_pdb, best_match_struc, superpose_resi, 
+                    reference_pdb, best_match_struc, superpose_resi, 
                     org_pdb_list, 'super', max_digt, out_pdb_ext )
 
   ## Check pymol alignment Log
@@ -75,7 +75,7 @@ def PyMOLSuperpose( pymol_exec, template_pdb, best_match_struc,
       if re.search(r'PyMOL>load', line):
         curr_pdb = line.split('load ')[1].split(', ')
         Mdls.append(curr_pdb)
-      if re.search(r'Executive: RMS =', line):
+      if re.search(r'Executive: RMS', line):
         atom = int(line.split('=')[1].split('(')[1].split('to')[0])
         Atoms.append([line.split(':')[1], atom])
       if re.search(r'Executive: Error', line):
@@ -104,7 +104,7 @@ def PyMOLSuperpose( pymol_exec, template_pdb, best_match_struc,
   ## Redo the alignment of models that failed the 'superimpose' with 'align'
   if len(Aligns) > 0:
     AlignStructures(  pymol_exec, aligned_mdl_list, pymol_align_pref, 
-                      template_pdb, best_match_struc, superpose_resi, 
+                      reference_pdb, best_match_struc, superpose_resi, 
                       Aligns, 'align', max_digt, out_pdb_ext )
 
 
@@ -112,7 +112,7 @@ def PyMOLSuperpose( pymol_exec, template_pdb, best_match_struc,
 ## Write out .pml file for PyMOL-based structure superposition
 ## Rename the aligned models with a shortened model numbering
 def AlignStructures(  pymol_exec, aligned_mdl_list, pymol_align_pref, 
-                      template_pdb, best_match_struc, superpose_resi, 
+                      reference_pdb, best_match_struc, superpose_resi, 
                       org_pdb_list, align_mode, max_digt, out_pdb_ext ):
 
   pymol_pref = '{0}.{1}'.format(pymol_align_pref, align_mode)
@@ -120,8 +120,8 @@ def AlignStructures(  pymol_exec, aligned_mdl_list, pymol_align_pref,
 
   l = open(aligned_mdl_list, 'w')
   r = open('{0}.pml'.format(pymol_pref), 'w')
-  r.write('load {0}, template\n'.format(template_pdb))
-  r.write('sele ref_resid, template and {0}\n\n'.format(superpose_resi))
+  r.write('load {0}, reference\n'.format(reference_pdb))
+  r.write('sele ref_resid, reference and {0}\n\n'.format(superpose_resi))
   r.write('load {0}, best_match_{1}\n'.format(best_match_struc, match_pref))
 
   # Modeller-generated models are name B9999000xxx, ensuring human-sorting
@@ -182,7 +182,7 @@ def AlignStructures(  pymol_exec, aligned_mdl_list, pymol_align_pref,
 
   os.system('{0} -c {1}.pml > {1}.pymol-log'.format(pymol_exec, pymol_pref))
   os.system('bzip2 -f {0}.pse'.format(pymol_pref))
-  print('  ** Finished Structure Superposition **')
+  print('  ** Finished Superposition **')
 
 
 ##########################################################################

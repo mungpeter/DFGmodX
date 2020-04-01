@@ -11,12 +11,12 @@ def GenerateAndAlignModeller(
         script_directory, home_directory, work_directory, result_directory,
         chimera_tmpl_list, mdl_pir_file, number_of_model, 
         number_of_cpu, mdl_output_pref,
-        template_pdb, best_match_struc, superpose_resi,
+        reference_pdb, best_match_struc, superpose_resi,
         pymol_exec, Settings ):
 
   Vars = [ 'ScriptDirectory', 'ChimeraTemplList', 'ModifiedPIRFile' ]
 
-  print('\n  -- DFGmodel Structure Generation --')
+  print('\n  \033[31m-- DFGmodel Structure Generation --\033[0m')
   for var in Vars:
     if var == 'ChimeraTemplList':
       if os.path.exists(var):
@@ -38,8 +38,8 @@ def GenerateAndAlignModeller(
   # Align all generated models to a reference frame
   RunStructureAlignment(
         script_directory, work_directory, result_directory,
-        Settings['DatasetDirectory']+'/'+template_pdb, best_match_struc, 
-        superpose_resi, mdl_output_pref, aligned_mdl_list, number_of_model 
+        Settings['DatasetDirectory']+'/'+reference_pdb, best_match_struc, 
+        superpose_resi, mdl_output_pref, aligned_mdl_list, number_of_model, 
         pymol_exec )
 
   os.chdir(home_directory)
@@ -53,21 +53,21 @@ def RunModelGeneration(
         number_of_cpu, mdl_output_pref ):
 
   os.chdir(work_directory)
-  os.system('pwd')
-  print(os.getcwd())
   mod = 'python3'
 
-  print('\n  ** Generating DFGmodel **\n')
+  print('\033[34m## Current directory:\033[0m\n{0}\n'.format(os.getcwd()))
   print( [chimera_tmpl_list, mdl_pir_file, number_of_model, 
           number_of_cpu, mdl_output_pref] )
 
   Log = []
   try:
-    print(' >> Modeller: '+mod)
+    print(' >> Modeller: \033[34m{0}\033[0m'.format(mod))
     run_m = mod+' "{0}/x_modeller_parallel.py" "{1}/{2}" "{1}/{3}" {4} {5} {6}'.format(
-          script_directory, result_directory, 
+          script_directory, work_directory, 
           chimera_tmpl_list, mdl_pir_file,
           number_of_model, number_of_cpu, mdl_output_pref )
+    print('\n\033[31m{0}\033[0m\n'.format(run_m))
+#    os.system(run_m)
     Log = subprocess.check_output(run_m, shell=True, universal_newlines=True)
 
     with open(mdl_output_pref+'.modeller.log', 'w') as fo:
@@ -85,12 +85,13 @@ def RunModelGeneration(
 
   Model_List = sorted(glob.glob('{0}.B999*.pdb'.format(mdl_output_pref)))
 
-  # Replace existing tar.bz2
+  # Tar orig_pdb results to "result"; Replace existing tar.bz2 if it is in "result_directory"
   if os.path.isfile('{0}/{1}.orig_pdb.tar.bz2'.format( result_directory, mdl_output_pref)):
     os.remove('{0}/{1}.orig_pdb.tar.bz2'.format( result_directory, mdl_output_pref))
-  tar = tarfile.open('{0}/{1}.orig_pdb.tar.bz2'.format( result_directory, 
-                            mdl_output_pref), 'w:bz2')
-  
+  tar = tarfile.open('{0}/{1}.orig_pdb.tar.bz2'.format( 
+                      result_directory, mdl_output_pref), 'w:bz2')
+
+  # writing into the tar_file in "result_directory"  
   with open(mdl_output_pref+'.orig_pdb.list', 'w') as fo:
     for model in Model_List:
       fo.write(model.strip()+'\n')
@@ -101,19 +102,19 @@ def RunModelGeneration(
 
 ##########################################################################
 ## Extract Z-DOPE scores from the Modeller output and sort them
-def ExtractZDOPEScore(result_directory, mdl_output_pref):
+def ExtractZDOPEScore( result_directory, mdl_output_pref ):
   Record = []
   Title  = []
   record = False
   with open(mdl_output_pref+'.modeller.log','r') as fi:
-    for line in fi if line.rstrip():  # skip blank lines
+    for line in filter(None, (l.rstrip() for l in fi)):  # skip blank lines
       if record:
         if re.match(r'---', line) or re.match(r'Filename', line):
           Title.append(line+'\n')
           continue
         Items = line.split()
         Record.append(Items)
-      if re.search(r'>> Summary of successfully', line):
+      if re.search(r'>> Summary of successfully produced models:', line):
         record = True
 
   Sorted = sorted(Record, key=lambda tup: (tup[5]), reverse=True)
@@ -140,16 +141,16 @@ def ExtractZDOPEScore(result_directory, mdl_output_pref):
 ## Align modeller-generated structures to reference kinase (1ATP or 2BDF)
 def RunStructureAlignment(
         script_directory, work_directory, result_directory, 
-        template_pdb, best_match_struc, superpose_resi, 
+        reference_pdb, best_match_struc, superpose_resi, 
         mdl_output_pref, aligned_mdl_list, number_of_model,
         pymol_exec ):
 
-  print('\n  ** Running Structure Superposition **\n')
   os.chdir(work_directory)
-  print( os.getcwd() )
+  print('\n  \033[31m** Running Structure Superposition **\033[0m\n')
+  print('\033[34m## Current directory:\033[0m\n{0}\n'.format(os.getcwd()))
 
 # Align DFGmodel structure to a reference structure
-  PyMOLSuperpose( pymol_exec, template_pdb, best_match_struc, superpose_resi, 
+  PyMOLSuperpose( pymol_exec, reference_pdb, best_match_struc, superpose_resi, 
                   mdl_output_pref+'.orig_pdb.list', mdl_output_pref+'.align', 
                   aligned_mdl_list, number_of_model, 'mod.pdb' )
 
@@ -165,20 +166,20 @@ def RunStructureAlignment(
   # Replace existing tar.bz2
   if os.path.isfile('{0}/{1}.mdl_pdb.tar.bz2'.format( result_directory, mdl_output_pref)):
     os.remove('{0}/{1}.mdl_pdb.tar.bz2'.format( result_directory, mdl_output_pref))
-  tar = tarfile.open('{0}/{1}.mdl_pdb.tar.bz2'.format( result_directory, 
-                            mdl_output_pref), 'w:bz2')
+  tar = tarfile.open('{0}/{1}.mdl_pdb.tar.bz2'.format( 
+                      result_directory, mdl_output_pref), 'w:bz2')
 
-  with open(mdl_output_pref+'.align_pdb.list', 'w') as fo:
+  with open(mdl_output_pref+'.aligned_pdb.list', 'w') as fo:
     for mdl in Models:
       fo.write(mdl+'\n')
       tar.add(mdl)
-  tar.add(mdl_output_pref+'.align_pdb.list')
+  tar.add(mdl_output_pref+'.aligned_pdb.list')
   tar.close()
 
 
   #   Copy work-directory items to result-directory
   ### mdl_output_pref.align_pdb.list is hard-coded
-  os.system('cp {0} {1}.*pse.gz {1}.mod-*.log "{2}"'.format(
+  os.system('cp {0} {1}.*pse.bz2 {1}.mod-*.log "{2}"'.format(
             mdl_output_pref+'.align_pdb.list', 
             mdl_output_pref+'.align',
             result_directory))
