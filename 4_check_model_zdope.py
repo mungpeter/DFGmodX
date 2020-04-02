@@ -63,6 +63,11 @@ def main( fasta_file, conf, out_file ):
     for p in ordered:
       fo.write('{0:10s}{1:8.4f}\n'.format(p[0],p[1]))
 
+  ## List those failed to model
+  with open('failed.'+out_file, 'w') as fo:
+    for f in failed:
+      fo.write('{0}\n'.format(f))
+
 
 ##########################################################################
 if __name__ == '__main__':
