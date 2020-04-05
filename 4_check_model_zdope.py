@@ -26,7 +26,6 @@ msg = '''\n  > {0}
 if len(sys.argv) != 4: sys.exit(msg)
 
 import os,re
-import pandas as pd
 
 from Bio import SeqIO
 
@@ -36,7 +35,6 @@ def main( fasta_file, conf, out_file ):
 
   prot_list = [f.id.split('|')[0] for f in SeqIO.parse(fasta_file, 'fasta')]
 
-  failed = []
   finish = []
   ## Read in zDOPE file if it is there, collect the avg zDOPE for each protein
   for name in prot_list:
@@ -45,30 +43,24 @@ def main( fasta_file, conf, out_file ):
       with open('{0}/1_result/{1}.{0}.zDOPE.txt'.format(name, conf), 'r') as fi:
         # only collect zDOPE from first 5 rows of ranked zDOPE data
         for i, l in enumerate(fi):
-          if i < 2 or i > 6:
+          if i < 2:
             continue 
           else:
             zdope.append(float(l.split()[5]))
-        
-        if len(zdope) == 0:
-          failed.append(name)
-          finish.append([ name, 999 ])
-        else:
-          finish.append([ name, sum(zdope)/len(zdope) ])
+
+      top_5 = sorted(zdope)[:5]
+      if len(zdope) == 0:
+        finish.append([ name, 10. ])
+      else:
+        finish.append([ name, sum(top_5)/len(top_5) ])
     else:
-      failed.append(name)
-      finish.append([ name, 999 ])
+      finish.append([ name, 10. ])
 
   ## Sort protein with worst zDOPE scores first
   ordered = sorted(finish, key=lambda x: x[1])
   with open(out_file, 'w') as fo:
     for p in ordered:
       fo.write('{0:10s}{1:8.4f}\n'.format(p[0],p[1]))
-
-  ## List those failed to model
-  with open('failed.'+out_file, 'w') as fo:
-    for f in failed:
-      fo.write('{0}\n'.format(f))
 
 
 ##########################################################################

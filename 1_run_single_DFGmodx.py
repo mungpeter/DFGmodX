@@ -58,6 +58,7 @@ def main( setting_file, running, **kwargs ):
     sys.exit('\n  Error: [Running Option] is not specified: {0}'.format(running))
 
   # Retreive Settings variables
+  name = setting_file.split('/')[-1].split('.')[0]
   if re.search(r'.pkl', setting_file):
     Settings = pickle.load( open(setting_file, 'rb') )
   else:
@@ -155,7 +156,6 @@ def main( setting_file, running, **kwargs ):
   elif option == '-paths':
       print( '\n\033[33m  ** Just redo the setup file with directory paths; no change to existing files **\033[0m')
       ## update the setup files
-      name = setting_file.split('.')[0]
       pickle.dump( Settings, open( name+'.setup.pkl', 'wb' ) )
       with open( name+'.setup', 'w') as fo:
         for key in Settings.keys():
@@ -188,15 +188,15 @@ def main( setting_file, running, **kwargs ):
           script_directory, home_directory, work_directory, result_directory,
           pdb_directory, struct_nogap, kinome_nogap,
           seq_ident_thres, reference_pdb, mdl_prot_fasta, Settings )
+      os.chdir(home_directory)  # come back to home directory
       Settings['BestMatchStruc'] = best_match_struc
       Settings['SeqIdentity']    = pc_ident
 
-    ## update the setup files
-    name = setting_file.split('/')[-1].split('.')[0]
-    pickle.dump( Settings, open( '../{0}.setup.pkl'.format(name), 'wb' ) )
-    with open('../{0}.setup'.format(name), 'w') as fo:
-      for key in Settings.keys():
-        fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
+      ## update the setup files
+      pickle.dump( Settings, open( '{0}.setup.pkl'.format(name), 'wb' ) )
+      with open('{0}.setup'.format(name), 'w') as fo:
+        for key in Settings.keys():
+          fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
 
 
     # if template_list is > 1 (CODI), run the subconformations in iterations

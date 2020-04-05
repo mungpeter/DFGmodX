@@ -109,15 +109,17 @@ def ExtractZDOPEScore( result_directory, mdl_output_pref ):
   with open(mdl_output_pref+'.modeller.log','r') as fi:
     for line in filter(None, (l.rstrip() for l in fi)):  # skip blank lines
       if record:
-        if re.match(r'---', line) or re.match(r'Filename', line):
+        if re.match(r'Filename', line):
           Title.append(line+'\n')
+          continue
+        if re.match(r'---', line):
           continue
         Items = line.split()
         Record.append(Items)
       if re.search(r'>> Summary of successfully produced models:', line):
         record = True
 
-  Sorted = sorted(Record, key=lambda tup: (tup[5]), reverse=True)
+  Sorted = sorted(Record, key=lambda tup: float(tup[5]))
 
   with open(mdl_output_pref+'.zDOPE.txt', 'w') as fo:
     for line in Title: fo.write(line)
