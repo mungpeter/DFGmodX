@@ -21,8 +21,8 @@ align_thres   = 5.0  # seq iden threshold to switch from MUSCLE to EXPRESSO alig
 
 struct_database=dataset_dir+'stdy_kinase_xtal.all.200329.clean.fasta'
 struct_nogap  = dataset_dir+'stdy_kinase_xtal.all.200329.clean.nogap.fasta'
-kinome_database=dataset_dir+'MD_human_kinome_alignment.2019.200324.fasta'
-kinome_nogap  = dataset_dir+'MD_human_kinome_alignment.2019.200324.nogap.fasta'
+kinome_database=dataset_dir+'MD_human_kinome_alignment.2019.200331.be_modeled.fasta'
+kinome_nogap  = dataset_dir+'MD_human_kinome_alignment.2019.200331.be_modeled.nogap.fasta'
 # T-coffee has a limiting issue with too long of path+filename, result in coredump
 
 reference_pdb = '1atp.pdb'
@@ -40,7 +40,7 @@ superpose_resi= 'resi 122-139+162-183'  # C-lobe catalytic beta-sheet: 180709
 ##########################################################################
 ## Reformat FASTA file to have X-number of AA residue per line
 def per_line():
-  return 60
+  return 72
 
 
 ##########################################################################

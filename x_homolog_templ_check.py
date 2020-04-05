@@ -135,6 +135,10 @@ def FastaDatabaseSearch( result_directory, mdl_prot_fasta, struct_nogap,
 ##########################################################################
 # Calculate sequence identity and similarity of a query seq to a library of 
 # sequence (or single seq) and output a list with the best one at the 1st row
+### Info: if the no-gap fasta library has cut sites (designated by '/'), Blastp
+###    will yield 'FASTA-Reader: Ignoring invalid residues at position(s): '
+###    This is okay since Blastp will ignore this '/' character and has no
+###    effect on the alignment accuracy.
 def BlastpPairwiseIdentity( result_directory, mdl_prot_fasta, nogap_database ):
 
   # If input Fasta is a file, reconfigure to only the fasta name  

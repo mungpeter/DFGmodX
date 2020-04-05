@@ -47,7 +47,7 @@ def main( fasta_file, conformation,
   home_dir = str(os.getcwd())
 
   # work on each kinase sequence in supplied fasta file
-  Data = [ fasta for fasta in SeqIO.parse(fasta_file, 'fasta') ][400:]
+  Data = list(SeqIO.parse(fasta_file, 'fasta'))
   print('\033[31m## Reading FASTA file of kinases to be modeled:\033[0m {0}'.format(len(Data)))
 
   ## Make .pir for each fasta sequence in their own directory
@@ -77,7 +77,7 @@ def main( fasta_file, conformation,
         print('  > #1# Warning: Directory not found. Skip: '+name)
         continue
       os.chdir(name)
-      SetupVars = pickle.load( open('SetupVars.pkl', 'rb') )
+      SetupVars = pickle.load( open(name+'.setup.pkl', 'rb') )
 
       if mod_step == 2:
         print('\033[34m## Running model generation:\033[0m Remaining \033[31m{0:3d} - \033[36m{1}\033[0m'.format(
@@ -88,7 +88,7 @@ def main( fasta_file, conformation,
 #                      'mod', SetupVars['ScriptDirectory'], name))
 
         command = '{0}/1_run_single_DFGmodx.py {1} -mod -pass > {2} '.format(
-                      SetupVars['ScriptDirectory'], 'SetupVars.pkl', name+'.mod_log')
+                      SetupVars['ScriptDirectory'], name+'.setup.pkl', name+'.mod_log')
         os.system(command)
         os.chdir(home_dir)    # return to home directory
         
@@ -101,7 +101,7 @@ def main( fasta_file, conformation,
 #                      'vol', SetupVars['ScriptDirectory'], name))
 
         command = '{0}/1_run_single_DFGmodx.py {1} -vol -pass > {2} '.format(
-                      SetupVars['ScriptDirectory'], 'SetupVars.pkl', name+'.vol_log')
+                      SetupVars['ScriptDirectory'], name+'.setup.pkl', name+'.vol_log')
         os.system(command)
         os.chdir(home_dir)    # return to home directory)
       else:
@@ -152,8 +152,8 @@ def pir_setup( self, fasta ):
 
   ## Tell the script to use the sequence found in kinome database but
   ## specifying only the kinase name (in kinome database)
-  if os.path.isfile('SetupVars.pkl'):
-    Vars = VariableSetup( pickle.load( open('SetupVars.pkl', 'rb') ),
+  if os.path.isfile(name+'.setup.pkl'):
+    Vars = VariableSetup( pickle.load( open(name+'.setup.pkl', 'rb') ),
                             family, name, self.conf, self.cpu, 
                             self.mod, self.top, self.pref )
   else:
@@ -162,7 +162,7 @@ def pir_setup( self, fasta ):
                             self.mod, self.top, self.pref )
 
   ## write out temporary setup files
-  pickle.dump( Vars, open( 'SetupVars.pkl', 'wb' ) )
+  pickle.dump( Vars, open( name+'.setup.pkl', 'wb' ) )
   with open(name+'.setup', 'w') as fo:
     for key in Vars:
       fo.write('{0:20s} {1}\n'.format(key, Vars[key]))
@@ -172,7 +172,7 @@ def pir_setup( self, fasta ):
 
   print('\033[34m## Running PIR generation: \033[31m{0}\033[0m'.format(name))
   command = '{0}/1_run_single_DFGmodx.py {1} -pir -restart > {2} '.format(
-                  Vars['ScriptDirectory'], 'SetupVars.pkl', name+'.pir_log')
+                  Vars['ScriptDirectory'], name+'.setup.pkl', name+'.pir_log')
   os.system(command)
   print('  -- Finished PIR generation: '+name+' --\n')
 

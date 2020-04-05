@@ -33,7 +33,7 @@ module load modeller
 # set shell variables (job name, running, working directories, etc)
 
 /hpc/users/ungp01/9_scripts/3_program/structures/3_DFGmodx/1_run_single_DFGmodx.py \
-  SetupVars.pkl \
+  JBNAME.setup.pkl \
   -MODE -pass > JBNAME.MODE_log
 
 exit

@@ -155,8 +155,9 @@ def main( setting_file, running, **kwargs ):
   elif option == '-paths':
       print( '\n\033[33m  ** Just redo the setup file with directory paths; no change to existing files **\033[0m')
       ## update the setup files
-      pickle.dump( Settings, open( "SetupVars.pkl", "wb" ) )
-      with open(setting_file, 'w') as fo:
+      name = setting_file.split('.')[0]
+      pickle.dump( Settings, open( name+'.setup.pkl', 'wb' ) )
+      with open( name+'.setup', 'w') as fo:
         for key in Settings.keys():
           fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
       sys.exit()
@@ -190,11 +191,12 @@ def main( setting_file, running, **kwargs ):
       Settings['BestMatchStruc'] = best_match_struc
       Settings['SeqIdentity']    = pc_ident
 
-      ## update the setup files
-      pickle.dump( Settings, open( "../SetupVars.pkl", "wb" ) )
-      with open(setting_file, 'w') as fo:
-        for key in Settings.keys():
-          fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
+    ## update the setup files
+    name = setting_file.split('/')[-1].split('.')[0]
+    pickle.dump( Settings, open( '../{0}.setup.pkl'.format(name), 'wb' ) )
+    with open('../{0}.setup'.format(name), 'w') as fo:
+      for key in Settings.keys():
+        fo.write('{0:20s} {1}\n'.format(key, Settings[key]))
 
 
     # if template_list is > 1 (CODI), run the subconformations in iterations

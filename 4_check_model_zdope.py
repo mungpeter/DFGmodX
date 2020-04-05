@@ -52,10 +52,12 @@ def main( fasta_file, conf, out_file ):
         
         if len(zdope) == 0:
           failed.append(name)
+          finish.append([ name, 999 ])
         else:
           finish.append([ name, sum(zdope)/len(zdope) ])
     else:
       failed.append(name)
+      finish.append([ name, 999 ])
 
   ## Sort protein with worst zDOPE scores first
   ordered = sorted(finish, key=lambda x: x[1])
