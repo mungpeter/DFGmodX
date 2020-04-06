@@ -113,51 +113,53 @@ def TemplatePDBList ( conf ):
 ## CutSite templates for DFGmodel and N-/C-termini. This limits the size
 ## of modeled structure to specifically the core catalytic domain only
 def NCTermTempls():
-  NCCutsites = ['3KQ7:VPE|RY/FAQ|YH',   # (c-in,  d-out, st) p38a
-                '3NPC:VLK|RY/ITV|WY',   # (c-in,  d-out, st) jnk2
-                '3UGC:EER|HL/QIR|DN',   # (c-in,  d-out, y)  jak2
-                '3ETA:SRE|KI/DDL|HP',   # (c-in,  d-out, y)  igfr
-                '3OCS:DPK|DL/LDV|MD',   # (c-out, d-in,  1)  BTK Q06187 (1t)
-                '3VS6:PRE|SL/DDF|YT',   # (c-out, d-in,  1)  HCK P08631 (1t)
-                '2R4B:KET|EL/SRM|AR',   # (c-out, d-in,  2)  ErbB4 Q15303 (mbum)
-                '2H8H:PRE|SL/EDY|FT',   # (c-out, d-in,  2)  SRC P12931 (mbum)
-                '4EHG:PDG|QI/ELL|AR',   # (c-out, d-in,  3)  BRaf P15056 (hbum)
-                '4RFM:DPS|EL/AAI|AA',   # (c-out, d-in,  3)  ITK Q08881 (hbum)
-                '1AD5:PRE|SL/DDF|YT',   # (c-out, d-in,  4)  HCK P08631 (norm)
-                '3TV6:PDG|QI/ELL|AR',   # (c-out, d-in,  4)  BRaf P015056 (norm)                
-                '4M15:DPS|EL/AEI|AE',   # (c-out, d-in,  s)  ITK Q08881 (mek)
-                '3ZLW:KDD|DF/IKR|SD',   # (c-out, d-in,  s)  MEK1 Q02750 (mek)                
-                '2WGJ:GPS|SL/SAI|FS',   # (c-out, d-in,  s)  cMet P08581 (met)
-                '4XMO:GPS|SL/SAI|FS',   # (c-out, d-in,  s)  cMet P08581 (met)
-                '4I22:KET|EF/SKM|AR',   # (c-out, d-in,  s)  EGFR P00533 (egfr)
-                '2C0O:PRE|SL/DDF|YT',   # (c-out, d-in,  s)  HCK P08631 (egfr)
+  NCCutsites = ['1ATP:QLD|QF/NHK|WF',   # (Refernce columns) 1ATP P05132 (bovine)
+                '3KQ7:VPE|RY/AQY|HD',   # (c-in,  d-out, st) p38a Q16539
+                '3NPC:VLK|RY/RHP|YI',   # (c-in,  d-out, st) JNK2 P45984
+                '3UGC:EER|HL/QIR|DN',   # (c-in,  d-out, y)  JAK2 O60674
+                '3ETA:SRE|KI/EVS|FF',   # (c-in,  d-out, y)  IGFR P06213
+                '3OCS:DPK|DL/VMD|EN',   # (c-out, d-in,  1)  BTK  Q06187 (1t)
+                '3VS6:PRE|SL/TAT|ES',   # (c-out, d-in,  1)  HCK  P08631 (1t)
+                '2R4B:KET|EL/RDP|QR',   # (c-out, d-in,  2)  ErbB4 Q15303 (mbum)
+                '2H8H:PRE|SL/PQY|QP',   # (c-out, d-in,  2)  SRC  P12931 (mbum)
+                '4EHG:PDG|QI/RSL|PK',   # (c-out, d-in,  3)  BRaf P15056 (hbum)
+                '4RFM:DPS|EL/AIA|AS',   # (c-out, d-in,  3)  ITK  Q08881 (hbum)
+                '1AD5:PRE|SL/TAT|ES',   # (c-out, d-in,  4)  HCK  P08631 (norm)
+                '3TV6:PDG|QI/RSL|PK',   # (c-out, d-in,  4)  BRaf P15056 (norm)                
+                '4M15:DPS|EL/AEI|AE',   # (c-out, d-in,  s)  ITK  Q08881 (mek)
+                '3ZLW:KDD|DF/FAG|WL',   # (c-out, d-in,  s)  MEK1 Q02750 (mek)                
+                '2WGJ:SSL|IV/FST|FI',   # (c-out, d-in,  s)  cMET P08581 (met)
+                '4XMO:SSL|IV/FST|FI',   # (c-out, d-in,  s)  cMET P08581 (met)
+                '4I22:KET|EF/RDP|QR',   # (c-out, d-in,  s)  EGFR P00533 (egfr)
+                '2C0O:PRE|SL/TAT|ES',   # (c-out, d-in,  s)  HCK  P08631 (egfr)
 
-                '3EFJ:GPS|SL/AIF|ST',   # (c-out, d-out, y)   cmet
-                '3NAX:RPE|DF/FES|VT' ]  # (c-out, d-out, s/t) pdk1
+                '3EFJ:SSL|IV/GEH|YV',   # (c-out, d-out, y)  cMET P08581
+                '3NAX:RPE|DF/AHP|FF' ]  # (c-out, d-out, st) PDK1 O15530
   return NCCutsites
 
 def DFGTempls():
-  DFGCutsites = [ '3KQ7:MGA|DL/CEL|KI/YVA|TR', # (c-in,  d-out, st) p38a
-                  '3NPC:MDA|NL/CTL|KI/YVV|TR', # (c-in,  d-out, st) jnk2
-                  '3UGC:PYG|SL/NRV|KI/GES|PI', # (c-in,  d-out, y)  jak2
-                  '3ETA:AHG|DL/FTV|KI/GLL|PV', # (c-in,  d-out, y)  igfr
-                  '3OCS:ANG|CL/GVV|KV/SKF|PV', # (c-out, d-in,  1)  BTK Q06187 (1t)
-                  '3VS6:AKG|SL/LVC|KI/AKF|PI', # (c-out, d-in,  1)  HCK P08631 (1t)
-                  '2R4B:PHG|CL/NHV|KI/GKM|PI', # (c-out, d-in,  2)  ErbB4 Q15303 (mbum)
-                  '2H8H:SKG|SL/LVC|KV/AKF|PI', # (c-out, d-in,  2)  SRC P12931 (mbum)
-                  '4EHG:EGS|SL/LTV|KI/LSG|SI', # (c-out, d-in,  3)  BRaf P15056 (hbum)
-                  '4RFM:EHG|CL/QVI|KV/TKF|PV', # (c-out, d-in,  3)  ITK Q08881 (hbum)
-                  '1AD5:AKG|SL/LVC|KI/AKF|PI', # (c-out, d-in,  4)  HCK P08631 (norm)
-                  '3TV6:EGS|SL/LTV|KI/LSG|SI', # (c-out, d-in,  4)  BRaf P015056 (norm)                  
-                  '4M15:EHG|CL/QVI|KV/TKF|PV', # (c-out, d-in,  s)  ITK Q08881 (mek)
-                  '3ZLW:DGG|SL/GEI|KL/FVG|TR', # (c-out, d-in,  s)  MEK1 Q02750 (mek)                  
-                  '2WGJ:KHG|DL/FTV|KV/AKL|PV', # (c-out, d-in,  s)  cMet P08581 (met)
-                  '4XMO:KHG|DL/FTV|KV/AKL|PV', # (c-out, d-in,  s)  cMet P08581 (met)
-                  '4I22:PFC|CL/QHV|KI/GKV|PI', # (c-out, d-in,  s)  EGFR P00533 (egfr)
-                  '2C0O:AKG|SL/LVC|KI/AKF|PI', # (c-out, d-in,  s)  HCK P08631 (egfr)
+  DFGCutsites = [ '1ATP:AGG|EM/GYI|QV/GTP|EY', # (Refernce columns) 1ATP P05132 (bovine)
+                  '3KQ7:MGA|DL/CEL|KI/ATR|WY', # (c-in,  d-out, st) p38a Q16539
+                  '3NPC:MDA|NL/CTL|KI/VTR|YY', # (c-in,  d-out, st) JNK2 P45984
+                  '3UGC:PYG|SL/NRV|KI/SPI|FW', # (c-in,  d-out, y)  JAK2 O60674
+                  '3ETA:AHG|DL/FTV|KI/LPV|RM', # (c-in,  d-out, y)  IGFR P06213
+                  '3OCS:ANG|CL/GVV|KV/FPV|RW', # (c-out, d-in,  1)  BTK  Q06187 (1t)
+                  '3VS6:AKG|SL/LVC|KI/FPI|KW', # (c-out, d-in,  1)  HCK  P08631 (1t)
+                  '2R4B:PHG|CL/NHV|KI/MPI|KW', # (c-out, d-in,  2)  ErbB4 Q15303 (mbum)
+                  '2H8H:SKG|SL/LVC|KV/FPI|KW', # (c-out, d-in,  2)  SRC  P12931 (mbum)
+                  '4EHG:EGS|SL/LTV|KI/GSI|LW', # (c-out, d-in,  3)  BRaf P15056 (hbum)
+                  '4RFM:EHG|CL/QVI|KV/FPV|KW', # (c-out, d-in,  3)  ITK  Q08881 (hbum)
+                  '1AD5:AKG|SL/LVC|KI/FPI|KW', # (c-out, d-in,  4)  HCK  P08631 (norm)
+                  '3TV6:EGS|SL/LTV|KI/GSI|LW', # (c-out, d-in,  4)  BRaf P15056 (norm)                  
+                  '4M15:EHG|CL/QVI|KV/FPV|KW', # (c-out, d-in,  s)  ITK  Q08881 (mek)
+                  '3ZLW:DGG|SL/GEI|KL/GTR|SY', # (c-out, d-in,  s)  MEK1 Q02750 (mek)                  
+                  '2WGJ:KHG|DL/FTV|KV/LPV|KW', # (c-out, d-in,  s)  cMET P08581 (met)
+                  '4XMO:KHG|DL/FTV|KV/LPV|KW', # (c-out, d-in,  s)  cMET P08581 (met)
+                  '4I22:PFG|CL/QHV|KI/VPI|KW', # (c-out, d-in,  s)  EGFR P00533 (egfr)
+                  '2C0O:AKG|SL/LVC|KI/FPI|KW', # (c-out, d-in,  s)  HCK  P08631 (egfr)
 
-                  '3EFJ:KHG|DL/FTV|KV/AKL|PV', # (c-out, d-out, y)   cMet
-                  '3NAX:KNG|EL/MHI|QI/FVG|TA'] # (c-out, d-out, s/t) PDPK1
+                  '3EFJ:KHG|DL/FTV|KV/LPV|KW', # (c-out, d-out, y)  cMET P08581
+                  '3NAX:KNG|EL/MHI|QI/GTA|QY'] # (c-out, d-out, st) PDK1 O15530
   return DFGCutsites
 
 
@@ -226,3 +228,5 @@ def DefaultVariables():
 #   v12.0   18.04.08    separate running scripts to "x_variables_run.py"
 #   v13.    18.06.15    update fasta library and APE cut-sites
 #   v14     20.03.12    add MD_human_kinome_alignment
+#   v15     20.04.05    update CutSite residues based on MD kinome
+#
