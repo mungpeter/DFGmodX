@@ -40,6 +40,7 @@ if len(sys.argv) != 4: sys.exit(msg)
 import os,re
 
 from Bio import SeqIO
+from tqdm import tqdm
 
 ##########################################################################
 
@@ -59,7 +60,7 @@ def main( fasta_file, conf, out_file ):
 def ParseFile( prot_list, conf, out_file, num ):
   finish = []
   ## Read in zDOPE file if it is there, collect the avg zDOPE for each protein
-  for name in prot_list:
+  for name in tqdm(prot_list):
     zdope= []
     zdope_file = '{0}/1_result/{1}.{0}{2}.zDOPE.txt'.format(name, conf, num)
     if os.path.isfile(zdope_file):
