@@ -22,6 +22,18 @@ msg = '''\n  > {0}
       [ FASTA database with Protein Names used to generate Model ]
       [ Conformation (used in filename) ]
       [ Output filename ]
+
+  > need to be in the home directory where all kinase subdirectories are
+  > and <conf>.<name>.zDOPE.txt are in the /1_result folder in kinase directory
+  e.g.>  ---- /home_directory
+                    |-- /AKT1
+                          |-- /1_result
+                                  |-- cido.AKT1.zDOPE.txt
+                    |-- /AKT2
+                          |-- /1_result
+                                  |-- cido.AKT2.zDOPE.txt
+                    |-- /AKT3
+                    |...\n  
 '''.format(sys.argv[0])
 if len(sys.argv) != 4: sys.exit(msg)
 
@@ -35,30 +47,42 @@ def main( fasta_file, conf, out_file ):
 
   prot_list = [f.id.split('|')[0] for f in SeqIO.parse(fasta_file, 'fasta')]
 
+  if conf == 'codi':
+    num = ['.1', '.2','.3','.4']
+    [ ParseFile(prot_list, conf, out_file, n) for n in num ]
+  else:
+    num = ''
+    ParseFile(prot_list, conf, out_file, num)
+
+
+##########################################################################
+def ParseFile( prot_list, conf, out_file, num ):
   finish = []
   ## Read in zDOPE file if it is there, collect the avg zDOPE for each protein
   for name in prot_list:
     zdope= []
-    if os.path.isfile('{0}/1_result/{1}.{0}.zDOPE.txt'.format(name, conf)):
-      with open('{0}/1_result/{1}.{0}.zDOPE.txt'.format(name, conf), 'r') as fi:
-        # only collect zDOPE from first 5 rows of ranked zDOPE data
+    zdope_file = '{0}/1_result/{1}.{0}{2}.zDOPE.txt'.format(name, conf, num)
+    if os.path.isfile(zdope_file):
+      with open(zdope_file, 'r') as fi:
+        ## skip first 2 rows, take the 5th element, which is the zDOPE score
         for i, l in enumerate(fi):
           if i < 2:
             continue 
           else:
             zdope.append(float(l.split()[5]))
 
+      ## sort the zDOPE from lowest (good) to highest (bad), take best 5
       top_5 = sorted(zdope)[:5]
       if len(zdope) == 0:
-        finish.append([ name, 10. ])
+        finish.append([ name, 10. ])  # zDOPE > 2.0 means failed result
       else:
-        finish.append([ name, sum(top_5)/len(top_5) ])
+        finish.append([ name, sum(top_5)/len(top_5) ]) # average of best 5
     else:
       finish.append([ name, 10. ])
 
-  ## Sort protein with worst zDOPE scores first
+  ## Sort protein with lowest zDOPE scores first
   ordered = sorted(finish, key=lambda x: x[1])
-  with open(out_file, 'w') as fo:
+  with open(out_file+num, 'w') as fo:
     for p in ordered:
       fo.write('{0:10s}{1:8.4f}\n'.format(p[0],p[1]))
 

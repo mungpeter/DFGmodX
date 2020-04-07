@@ -84,9 +84,14 @@ def main( setting_file, running, **kwargs ):
     New['BestMatchStruc'] = Settings['PDBDirectory']+best_struct
     Settings['BestMatchStruc']   = New['BestMatchStruc']
 
-    templ_list  = Settings['TemplateList'].split('/')[-1]
-    New['TemplateList']  = Settings['DatasetDirectory']+templ_list
-    Settings['TemplateList']     = New['TemplateList']
+    if type(Settings['TemplateList']) is not list:
+      templ_list = Settings['TemplateList'].split('/')[-1]
+      New['TemplateList'] = Settings['DatasetDirectory']+templ_list
+      Settings['TemplateList'] = New['TemplateList']
+    else:
+      New['TemplateList'] = [Settings['DatasetDirectory']+i.split('/')[-1]    
+                             for i in Settings['TemplateList']]
+      Settings['TemplateList'] = New['TemplateList']  
 
 
   script_directory = Settings['ScriptDirectory']  # Directory with all the scripts
