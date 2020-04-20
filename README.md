@@ -12,16 +12,21 @@
 - Step 5: calculate the volume of the active site, rank and select ones with the largest volume
 
 **CIDO (aC-helix-in/DFG-out)**
-- This is the typical DFG-out conformation described in the literature, where DFG-motif has a 180-degree flip and brings the DFG-Phe phenyl ring out from the hydrophobic deep pocket in the kinase, leaving the deep DFG-pocket vacant and available for small molecule binding.
-- This range of movement can be well-captured by **one population** (set) of kinase structures in DFG-out conformation, where DFG-motif has a clear flip, while the set captures the range of small-lobe movement observed. Because the TK family has been heavily studied and with the most number of knownn CIDO structures, there are **2** sets of CIDO templates, one of TK family and another one for all other kinases.
+- This is the typical **DFG-out conformation** described in the literature, where DFG-motif has a 180-degree flip and brings the DFG-Phe phenyl ring out from the hydrophobic deep pocket in the kinase, leaving the deep DFG-pocket vacant and available for small molecule binding.
+- This range of movement can be well-captured by **one population** (set) of kinase structures in _DFG-out conformation_, where DFG-motif has a clear 180-degree flip, while the set captures the range of small-lobe movement observed. Because the TK family has been heavily studied and with the most number of known CIDO structures, there are **2** sets of CIDO templates, one for TK family only and another one for all other kinases.
 
 - When doing molecular docking to these CIDO models, I found that default settings for OpenEye FRED works very well, while Schrödinger GLIDE will need a 0.75x adjustment to the GRID van der Waals radius to get similar results. In both cases, should also set a hydrophobic sphere in the DFG-pocket to enforce docking to that site while having H-bond constraints to the hinge residue.
 
+**CODO (aC-helix-out/DFG-out)**
+- Similar to _CIDO_ conformation, a collection of kinase structures that are found to have CODO conformation is used as template for both TK and non-TK kinases. Only one population of models will be generated.
+
 **CODI (aC-helix-out/DFG-in)**
-- This is the C-helix-out conformation described in the literature as the "CDK-like" or "Src-like" inactive conformation. This conformation encompasses a range of aC-helix movements - translational, rotational, angular - that is more heterogeneous than DFG-motif movement (mostly just -in and -out). 
+- This is the **C-helix-out conformation** described in the literature as the "_CDK-like_" or "_Src-like_" inactive conformation. This conformation encompasses a range of aC-helix movements - translational, rotational, angular - that is more heterogeneous than DFG-motif movement (mostly just DFG-motif flip). 
 - Due to the large range of aC-helix movemnents, there are actually **several (4+) sub-populations** of CODI conformations. **4** of them are often seen in multiple kinases in different families, while some are family-specific. To generalize the modeling of CODI conformation, **4 sub-populations** (sets) are used in the modeling process as compared to CIDO model generation.
 - Notably, MEK has been seen to adopt a unique CODI conformation when bound to type-III inhibitor and ATP together, while cMET adopts another unique CODI conformation held up by an electrostatic interaction on its activation loop. These case-specific CODI conformations are not included in the general CODI sub-populations used for modeling but are also available for use.
 
+**CIDI (aC-helix-in/DFG-in)**
+- Different from CIDO/CODI/CODO model generation, modelling CIDI conformation uses the traditional approach where only **1** structure of the most related **CIDI** xtal structure is used in the homology modeling. The best-matched CIDI xtal structure is found via the result of Konformation, available in the Kinome Conformation Atlas [KinaMetrix](Kinametrix.com). Currently (2020.04) there are ~ 4,800 kinase xtal structures in RCSB PDB and ~ 4,000 have CIDI conformation, so there should be enough templates for use. Internally, it is  using the same chemeric multi-piece template approach just like the other conformations, but since it is only using the best-matched xtal structure as the only template, and the multi-piece template is a copy of the same xtal multiple times, the end result is the same as doing a single-piece template modeling.
 
 _Reference 1_: [Ung, P.M.U.; Schlessinger, A. DFGmodel: predicting protein kinase structures in inactive states for structure-based discovery of type-II inhibitors. ACS Chem. Biol. 2015, 10(1):269-278.](https://doi.org/10.1021/cb500696t)
 
@@ -29,7 +34,7 @@ _Reference 2_: [\*Ung PMU, \*Rahman R, Schlessinger A. Redefining the Protein Ki
 
 _Reference 3_: [\*Rahman R, \*Ung PMU, Schlessinger A. KinaMetrix: a web resource to investigate kinase conformations and inhibitor space. Nucleic Acids Research (2019) 47(D1), D361–D366.](https://doi.org/10.1093/nar/gky916)
 
-_Website_: [KinaMetrix.org](http://kinametrix.org)
+_Website_: [KinaMetrix.com](http://kinametrix.com)
 
 Reference for Modeller homology modeling: [Sali, Blundell. Comparative protein modelling by satisfaction of spatial restraints. J. Mol. Biol. (1993) 234(3), 779-815.](https://doi.org/10.1006/jmbi.1993.1626)
 
@@ -69,13 +74,13 @@ e.g.> ./1_auto_DFGmodx.py      \
                       # "2" will *only* generate actual models + volumes with successful setup
                       # "3" will *only* use generated models to calculate volumes
 ```
-For general purpose and simply automated setup/running of DFGModx, use **1_auto_DFGMod.py**. This is the wrapper script of the backbone script *1_run_single_DFGmodx.py* with all default settings for modeling kinase structures in different conformations. The entire modeling takes 2-3 steps:
+For general purpose and simply automated setup/running of DFGModx, use **1_auto_DFGMod.py**. This is the wrapper script of the backbone script **1_run_single_DFGmodx.py** with all default settings for modeling kinase structures in different conformations. The entire modeling takes 2-3 steps:
 - **Step 0**: generate the initial setup files and folders for all kinases being modeled with default setting
-- **Step 2**: generate kinase models with default settings, results in the **/1_dfgmod** folder
+- **Step 2**: generate kinase models + volumne calculation with default settings, results in the **/1_dfgmod** folder
 nameing convention: \_TEMP.{0}.y1.fasta, where {0} = model output prefix.
-- *step 3*: an optional step to run homology model binding site volume calculation. Generally won't need to use this unless Step 2 failed.
+- *step 3*: an optional step to run **only** the homology model binding site volume calculation. Generally don't need to do this unless Step 2 failed.
 
-- _Special, Step 1_: This is used when the setup files (<kinase>.setup, *.pir, *.pdb) are all ready and only need to do the production run (-mod, -vol) on a different computer, i.e. from local WorkStation to HPC cluster. This updates all the directory paths to match the new computer's directories according to the new "x_variables.py"
+- _Special, Step 1_: This is used when the setup files (<kinase>.setup, *.pir, *.pdb) are all ready and only need to do the production run (-mod, -vol) on a different computer and the paths/directories are different, e.g. from local WorkStation to HPC cluster. This updates all the directory paths to match the new computer's directories according to the new "x_variables.py"
 ```> ./1_auto_DFGmodx.py kinome.fasta cido 10 5 5   1```
 
 

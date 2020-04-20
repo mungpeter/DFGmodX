@@ -26,6 +26,8 @@ msg = '''\n\t> {0}
 \t  [ Optional Conformation: III\t- CODI MEK1-like for type-III inh ]
 \t  [                        MET\t- CODI cMET-like altered A-loop   ]
 \t  [                        EGFR\t-CODI EGFR-like altered A-loop    ]
+
+e.g.> ~/Dropbox/9_scripts/3_program/structures/3_DFGmodx/1_auto_DFGmodx.py ~/Dropbox/9_scripts/3_program/structures/3_DFGmodx/z_dataset/MD_human_kinome_alignment.2019.200331.be_modeled.nogap.fasta cidi 50 10 10 0
 '''.format(sys.argv[0])
 if len(sys.argv) != 7: sys.exit(msg)
 
@@ -47,7 +49,7 @@ def main( fasta_file, conformation,
   home_dir = str(os.getcwd())
 
   # work on each kinase sequence in supplied fasta file
-  Data = list(SeqIO.parse(fasta_file, 'fasta'))
+  Data = list(SeqIO.parse(fasta_file, 'fasta'))[2:]
   print('\033[31m## Reading FASTA file of kinases to be modeled:\033[0m {0}'.format(len(Data)))
 
   ## Make .pir for each fasta sequence in their own directory
@@ -84,25 +86,27 @@ def main( fasta_file, conformation,
                       len(Data)-idx, name))
 
 #        ## for use with HPC only
-#        os.system("sed 's/MODE/{0}/g' {1}/template.dfgmodx.lsf | sed 's/JBNAME/{2}/g' > {2}.dfgmodx.lsf; bsub < {2}.dfgmodx.lsf".format(
+#        os.system("sed 's/MODE/{0}/g' {1}/x_template.dfgmodx.lsf | sed 's/JBNAME/{2}/g' > {2}.dfgmodx.lsf; bsub < {2}.dfgmodx.lsf".format(
 #                      'mod', SetupVars['ScriptDirectory'], name))
 
         command = '{0}/1_run_single_DFGmodx.py {1} -mod -pass > {2} '.format(
                       SetupVars['ScriptDirectory'], name+'.setup.pkl', name+'.mod_log')
-        os.system(command)
+        os.system(command)    # local machine only
+
         os.chdir(home_dir)    # return to home directory
-        
+
       elif mod_step == 3:
         print('\033[34m## Running Volume Calculation and Model Sorting: \033[0mRemaining \033[31m{0:3d} - \033[36m{1}\033[0m'.format(
                       len(Data)-idx, name))
 
 #        ## for use with HPC only
-#        os.system("sed 's/MODE/{0}/g' {1}/template.dfgmodx.lsf | sed 's/JBNAME/{2}/g' > {2}.dfgmodx.lsf; bsub < {2}.dfgmodx.lsf".format(
+#        os.system("sed 's/MODE/{0}/g' {1}/x_template.dfgmodx.lsf | sed 's/JBNAME/{2}/g' > {2}.dfgmodx.lsf; bsub < {2}.dfgmodx.lsf".format(
 #                      'vol', SetupVars['ScriptDirectory'], name))
 
         command = '{0}/1_run_single_DFGmodx.py {1} -vol -pass > {2} '.format(
                       SetupVars['ScriptDirectory'], name+'.setup.pkl', name+'.vol_log')
-        os.system(command)
+        os.system(command)    # local machine only
+
         os.chdir(home_dir)    # return to home directory)
       else:
         sys.exit('  > #2# ERROR: Wrong Step input (only accept 1-3): '+str(mod_step))
@@ -147,6 +151,7 @@ def pir_setup( self, fasta ):
     os.system(command)
     print('  -- Finished Editing: '+name+'.setup --\n')
     return None
+
 ###########################################################
 
 

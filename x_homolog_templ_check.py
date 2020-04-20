@@ -5,9 +5,9 @@ import pandas as pd
 
 from Bio import SeqIO
 
-from x_pir_multi_align import FASTA_Gen
-from x_pir_multi_align import CacheSeqDatabase
-from x_pir_multi_align import MuscleProfileAlign
+from x_pir_functions import FASTA_Gen
+from x_pir_functions import CacheSeqDatabase
+from x_pir_functions import MuscleProfileAlign
 
 ##########################################################################
 # Calculate percent identity among the input sequence and available structure
@@ -15,7 +15,7 @@ from x_pir_multi_align import MuscleProfileAlign
 # to proceed
 def SearchKinaseStruct(
         script_directory, home_directory, work_directory, result_directory,
-        pdb_directory, struct_nogap, kinome_nogap,
+        pdb_directory, struct_nogap, kinome_nogap, conf_database, conformation,
         ident_thres, reference_pdb, mdl_prot_fasta, Settings ):
 
   Vars = [  'ScriptDirectory', 'HomeDirectory', 'WorkingDirectory',
@@ -60,7 +60,25 @@ def SearchKinaseStruct(
           kinase_name = name
         else:
           print('  \033[34m{0} \033[0mis not found in Xtal Database. Fall back to Best-matched:\033[34m{0}\033[0m'.format(mdl_prot_fasta, kinase_name))
-      break  ## whenever there is a first match > 220 (already ordered by identity)
+      
+      ## This checks if CIDI model is being generated. If not, just export the 
+      ## matched structure. If CIDI, check if matched xtal is also CIDI. If
+      ## not, check for next structure with closest one (same or diff kinase)
+      if re.search('cidi', conformation, re.IGNORECASE):
+        # Get data from Kinase xtal structure conformation database
+        Conf_df = pd.read_csv(conf_database, sep=',')
+        mask = Conf_df['pdb_id'].values == kinase_name
+        if True in mask:
+          if Conf_df[mask]['Class'].values == 'cidi':
+            print('\033[31m  - CIDI modeling: using best-match: \033[0m{0}'.format(kinase_name))
+            break
+          else:
+            continue
+        else:
+          continue
+      else:
+        break  ## whenever there is a first match > 220 (already ordered by identity)
+
 
 
   # Locate the chosen structure in the database and return the path

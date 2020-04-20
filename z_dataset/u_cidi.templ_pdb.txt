@@ -1,0 +1,4 @@
+## DFG-in, C-in: these are only placeholders for scripting - 200420
+## their conformation does not matter
+3KQ7_A.1atp.pdb
+2BDF_A.1atp.pdb

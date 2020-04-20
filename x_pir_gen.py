@@ -4,7 +4,7 @@ import re,os,sys
 import tarfile
 
 from x_pymol_alignment import PyMOLSuperpose
-from x_pir_multi_align import ModellerMultiAlignGen
+from x_pir_multi_align import ModellerAlignGen
 
 #####################################################################
   # Generate modified alignment file (.pir) for Modeller
@@ -51,22 +51,31 @@ def GenerateAndModifyPIR(
                                 '_TEMP.pdb.list', '_TEMP.struct_super',
                                 pymol_exec )
 
+  ## If CIDI is being modelled, single-template approach is used
+  ## CIDO/CODI/CODO modelling will use multi-template approach
+  if template_list is None:
+    print('  \033[34m** Running \033[31mSingle \033[34mTemplate-Target structure superposition for CIDI **\033[0m')
+    ModellerAlignGen( pdb_directory, work_directory,
+                      struct_database, struct_nogap, kinome_database, kinome_nogap,
+                      template_list, tget_pdb, mdl_prot_fasta,
+                      best_match_struc, pc_ident, align_switch, correct_fasta,
+                      chimera_tmpl_list, mdl_pir_file, mdl_output_pref )
 
-  print('  ** Running multiple template-target structure superposition **')
 
-  ModellerMultiAlignGen(  pdb_directory, work_directory,
-                          struct_database, struct_nogap, kinome_database, kinome_nogap,
-                          template_list, tget_pdb, mdl_prot_fasta,
-                          best_match_struc, pc_ident, align_switch, correct_fasta,
-                          chimera_tmpl_list, mdl_pir_file, mdl_output_pref )
+  else:
+    print('  \033[34m** Running \033[31mMultiple \033[34mTemplate-Target structure superposition **\033[0m')
+    ModellerAlignGen( pdb_directory, work_directory,
+                      struct_database, struct_nogap, kinome_database, kinome_nogap,
+                      template_list, tget_pdb, mdl_prot_fasta,
+                      best_match_struc, pc_ident, align_switch, correct_fasta,
+                      chimera_tmpl_list, mdl_pir_file, mdl_output_pref )
+    print('  \033[34m** Finished Multiple Template-Target structure superposition **\033[0m')
 
-  print('  ** Finished template-target structure superposition **')
-
-  # replace existing tar.bz2
+  # replace/overwrite existing tar.bz2 and put items into tar file
   if os.path.exists('{0}/{1}.chim_pdb.tar.bz2'.format(result_directory, mdl_output_pref)):
     os.remove('{0}/{1}.chim_pdb.tar.bz2'.format(result_directory, mdl_output_pref))
   tar = tarfile.open('{0}/{1}.chim_pdb.tar.bz2'.format(result_directory, 
-        mdl_output_pref), mode='w:bz2')
+                      mdl_output_pref), mode='w:bz2')
 
   if os.path.isfile(chimera_tmpl_list):
     with open(chimera_tmpl_list, 'r') as fi:
@@ -75,10 +84,9 @@ def GenerateAndModifyPIR(
     tar.add(chimera_tmpl_list)
     tar.close()
   else:
-    print('### No such file: '+chimera_tmpl_list)
+    print('\033[31m### No such file:\033[0m '+chimera_tmpl_list)
 
-  os.system('cp {0} {1} {2}'.format(mdl_pir_file, chimera_tmpl_list,
-                        result_directory))
+  os.system('cp {0} {1} {2}'.format(mdl_pir_file, chimera_tmpl_list, result_directory))
   os.chdir(home_directory)
 
 
@@ -115,3 +123,5 @@ def SuperposeStruct( dataset_dir, reference_pdb, best_match_struc,
 ##  v4.0 -- 18.03.09 - adopt to handle CODI multiple runs
 ##  v5.0 -- 18.03.30 - change the handling of 'None' structure
 ##  v6.0 -- 19.12.28 - PyMOLSuperpose with new output PDB extension
+##  v7.0    20.04.10 - add capacity to handle CIDI modeling
+

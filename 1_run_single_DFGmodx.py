@@ -27,11 +27,10 @@ import pickle
 
 from x_variables import DefaultVariables
 from x_pir_gen import GenerateAndModifyPIR
-from x_check_scripts import CheckEssentFiles
 from x_pir_multi_align import CacheSeqDatabase
 from x_modl_gen import GenerateAndAlignModeller
-from x_variables_run import ParseInputVariables
 from x_vol_gen import GeneratePOVMEAndSortModels
+from x_variables_run import ParseInputVariables
 from x_variables_run import GenerateTemplSetupScript
 from x_homolog_templ_check import SearchKinaseStruct
 
@@ -78,19 +77,22 @@ def main( setting_file, running, **kwargs ):
     Settings['StructNoGap']      = New['StructNoGap']
     Settings['KinomeDatabase']   = New['KinomeDatabase']
     Settings['KinomeNoGap']      = New['KinomeNoGap']
+    Settings['ConfClassify']     = New['ConfClassify']
     Settings['PDBDirectory']     = New['PDBDirectory']
 
+    # This sets the use of one best matched xtal structure as C-lobe base
     best_struct = Settings['BestMatchStruc'].split('/')[-1]
     New['BestMatchStruc'] = Settings['PDBDirectory']+best_struct
     Settings['BestMatchStruc']   = New['BestMatchStruc']
 
+    # This sets the use of one of multple template_list
     if type(Settings['TemplateList']) is not list:
       templ_list = Settings['TemplateList'].split('/')[-1]
       New['TemplateList'] = Settings['DatasetDirectory']+templ_list
       Settings['TemplateList'] = New['TemplateList']
     else:
       New['TemplateList'] = [Settings['DatasetDirectory']+i.split('/')[-1]    
-                             for i in Settings['TemplateList']]
+                              for i in Settings['TemplateList']]
       Settings['TemplateList'] = New['TemplateList']  
 
 
@@ -104,6 +106,8 @@ def main( setting_file, running, **kwargs ):
   struct_nogap     = Settings['StructNoGap']      # all-structure no-gap fasta database
   kinome_database  = Settings['KinomeDatabase']   # aligned canonical human kinome seq database
   kinome_nogap     = Settings['KinomeNoGap']      # no-gap canonical human kinome seq database
+  conf_database    = Settings['ConfClassify']     # database of xtal conformation
+
   pdb_directory    = Settings['PDBDirectory']     # PDB structure directory
   template_list    = Settings['TemplateList']     # List of C-helix/DFG templates
   superpose_resi   = Settings['SuperposeRefResi'] # reference residue superpose
@@ -191,7 +195,7 @@ def main( setting_file, running, **kwargs ):
       # return matched PDB file, and its percent identity
       best_match_struc, pc_ident = SearchKinaseStruct(
           script_directory, home_directory, work_directory, result_directory,
-          pdb_directory, struct_nogap, kinome_nogap,
+          pdb_directory, struct_nogap, kinome_nogap, conf_database, conformation,
           seq_ident_thres, reference_pdb, mdl_prot_fasta, Settings )
       os.chdir(home_directory)  # come back to home directory
       Settings['BestMatchStruc'] = best_match_struc
@@ -205,7 +209,7 @@ def main( setting_file, running, **kwargs ):
 
 
     # if template_list is > 1 (CODI), run the subconformations in iterations
-    if type(template_list) is not str:
+    if type(template_list) is list:     # CODI use [list of template_lists]
       for idx, template in enumerate(template_list):
         GenerateAndModifyPIR(
             script_directory, dataset_dir, home_directory,
@@ -216,7 +220,7 @@ def main( setting_file, running, **kwargs ):
             pc_ident, align_switch, correct_fasta,
             chimera_tmpl_list+'.'+str(idx+1), mdl_pir_file+'.'+str(idx+1),
             mdl_output_pref+'.'+str(idx+1), pymol_exec, Settings )
-    else:
+    else:                               # CIDI/CIDO/CODO use 1 template_list
       GenerateAndModifyPIR(
           script_directory, dataset_dir, home_directory,
           work_directory, result_directory, pdb_directory,
@@ -233,7 +237,7 @@ def main( setting_file, running, **kwargs ):
   if mod:
     print('*** '+Settings['BestMatchStruc']+' ***')
     print(best_match_struc)
-    if type(template_list) is not str:
+    if type(template_list) is list:      # CODI use [list of template_lists]
       for idx in range( len(template_list) ):
         GenerateAndAlignModeller(
             script_directory, home_directory, work_directory, result_directory,
@@ -242,7 +246,7 @@ def main( setting_file, running, **kwargs ):
             mdl_output_pref+'.'+str(idx+1),
             reference_pdb, best_match_struc, superpose_resi,
             pymol_exec, Settings )
-    else:
+    else:                                # CIDI/CIDO/CODO use 1 template_list
       GenerateAndAlignModeller(
           script_directory, home_directory, work_directory, result_directory,
           chimera_tmpl_list, mdl_pir_file,
@@ -254,7 +258,7 @@ def main( setting_file, running, **kwargs ):
 
 ##########################################################################
   # Select models with largest binding pocket
-  if vol:
+  if vol:                         # CODI use [list of template_lists]
     if type(template_list) is not str:
       for idx in range( len(template_list) ):
         GeneratePOVMEAndSortModels(
@@ -263,7 +267,7 @@ def main( setting_file, running, **kwargs ):
             mdl_output_pref+'.'+str(idx+1),
             number_of_cpu, conformation,
             int(top_model), Settings )
-    else:
+    else:                         # CIDI/CIDO/CODO use 1 template_list
       GeneratePOVMEAndSortModels(
           script_directory, home_directory, work_directory, result_directory,
           povme_exec, povme_directory, povme_pdb,
@@ -298,4 +302,5 @@ if __name__ == "__main__":
 #   v9.0    18.03.28    change the 'setting_file' to accept pre-defined Dict
 #   v10     20.03.21    adopt alignment to kinome MSA profile, detect if input
 #                       fasta is already aligned and then skip MUSCLE alignment 
+#                       add CIDI modeling using Konformation-classifed xtals
 #

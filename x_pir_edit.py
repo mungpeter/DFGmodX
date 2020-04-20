@@ -48,19 +48,11 @@ from x_variables import NCTermTempls
 ##
 ##########################################################################
 
-msg = '''
-    > {0}
-        [PIR File] [Resid Per Line] [Output Filename] 
-        [Optional: CutSite File]*
-\n          * Must have 2 reference Cutsite sequences
-    '''.format(sys.argv[0])
-#if len(sys.argv) < 4 or len(sys.argv) > 5: sys.exit(msg)
-
-
 ##########################################################################
 ## Read in the aligned .fasta file to determine the positions of the 'cuts'
 ## and generate the Modeller .pir with corrected target sequence
-def ModifyPIR( PIRSequences, per_line, out_filename, mdl_output_pref ):
+def ModifyMultiPiecePIR(  PIRSequences, per_line, 
+                          out_filename, mdl_output_pref, cidi_model=False ):
 
   # Parse reference PDB fasta for columns in aligned FASTA file and use
   # that column to find corresponding seq in target kinases
@@ -68,12 +60,14 @@ def ModifyPIR( PIRSequences, per_line, out_filename, mdl_output_pref ):
   NCCuts  = CutSiteTemplates( NCTermTempls(), 'NC-ter' )
 
   # Take in list of Sequences for editing
-  # Sequences format: Item[0] (>P1;) Item[1] (structureX|sequence)
-  #                   Item[2] (aligned fasta) Item[3] (fasta length)
+  # Sequences format: Item[0] (>P1;) 
+  #                   Item[1] (structureX|sequence)
+  #                   Item[2] (aligned fasta) 
+  #                   Item[3] (fasta length)
   #                   Item[4] (protein name)
   RefSeqs = {}
   Model   = []
-  print( '\n## Read-in \033[31m{0}\033[0m PIR Sequences:'.format(len(PIRSequences)))
+  print( '\n\033[34m## Read-in PIR Sequences: \033[31m{0}\033[0m'.format(len(PIRSequences)))
   for index, Item in enumerate(PIRSequences):
     print(Item[0], '\t', str(Item[3]))
 
@@ -96,14 +90,14 @@ def ModifyPIR( PIRSequences, per_line, out_filename, mdl_output_pref ):
   print('\n\033[34m## DFGCuts ##\033[0m\n', (DFGCuts.keys()))
   print('\n\033[34m## RefSeqs ##\033[0m\n', (RefSeqs.keys()))
 
-  DFGCutSites = FindCutSites(DFGCuts, RefSeqs, mdl_output_pref)
+  DFGCutSites = FindCutSites(DFGCuts, RefSeqs, 'DFG', mdl_output_pref)
   print('\n\033[34m## Finding DFG Cut-Site position in reference column:\033[0m\n', DFGCutSites)
 
   if len(DFGCutSites) != 2: 
     sys.exit('\n\033[31m  > #2# ERROR: Require 2 DFG-CutSite references: only {0} found in\033[0m\n{1}: {2}'.format(
                   len(DFGCutSites), RefSeqs.keys(), mdl_output_pref )) 
 
-  NCTCutSites = FindCutSites(NCCuts, RefSeqs, mdl_output_pref)
+  NCTCutSites = FindCutSites(NCCuts, RefSeqs, 'NC-ter', mdl_output_pref)
   if len(NCTCutSites) != 2:
     sys.exit('\n\033[31m  > #2# ERROR: Require 2 NC-CutSite references: only {0} found in\033[30m\n{1}: {2}'.format(
                   len(NCTCutSites), RefSeqs.keys(), mdl_output_pref ))
@@ -116,7 +110,8 @@ def ModifyPIR( PIRSequences, per_line, out_filename, mdl_output_pref ):
 
 
   # Reprint the .pir file with modified(cut) model sequence in it
-  ReprintPIRFile(PIRSequences, ModifiedModel, per_line, out_filename)
+  # if cidi_model is True, only print out last 2 PIRSequences; first 2 are only placeholders
+  ReprintPIRFile(PIRSequences, ModifiedModel, cidi_model, per_line, out_filename)
 
 
 ##########################################################################
@@ -147,7 +142,7 @@ def CutSiteTemplates( CutSites, txt ):
 ## Template with cut site is formated
 ## >PDBName:XXX|YY/AAA|BB/III|JJ
 
-def FindCutSites( Templs, RefSeqs, mdl_output_pref ):
+def FindCutSites( Templs, RefSeqs, site, mdl_output_pref ):
   # For each reference sequence, identify the position of residues for cut 
   Sites = []
   for key in RefSeqs.keys():
@@ -198,8 +193,8 @@ def FindCutSites( Templs, RefSeqs, mdl_output_pref ):
         else: continue
     Sites.append(Positions)
     if len(Positions) < 2: 
-      sys.exit('\n  > #2# ERROR: {0} has only {1} of {2} Cutsites -- {3}: {4}'.format(
-                      key, len(Positions), len(Cuts), Positions, mdl_output_pref ))
+      sys.exit('\n  > #2# ERROR: {0} has only {1} of {2} {3} Cutsites -- {4}: {5}'.format(
+                      key, len(Positions), len(Cuts), site, Positions, mdl_output_pref ))
 
   return Sites
 
@@ -267,9 +262,16 @@ def CutAndReprintModel( DFGCutSites, NCTCutSites, Model ):
 
 ##########################################################################
 ## Format and print the parsed .pir for Modeller remodeling
-def ReprintPIRFile( PIRSequences, Model, per_line, out_filename ):
+## if cidi_model is True, only print last 2 PIRSequences; first 2 are only placeholders
+def ReprintPIRFile( PIRSequences, Model, cidi_model, per_line, out_filename ):
   # Print out the reference sequences
   Prints = []
+
+  # if dealing with CIDI modelling, use only last 2 seq - best-match and target; 
+  # otherwise, use all
+  if cidi_model is True:
+    PIRSequences = PIRSequences[-1:]
+
   for Item in PIRSequences:
     FormatSeqForPrint(FormatRefSeq(Item), Prints, per_line)
 
@@ -331,7 +333,7 @@ def CutSiteCheck( CutSites, RefSeqs, txt, mdl_output_pref ):
 
   print('\n## Using \033[34m{0} {1}\033[0m CuteSite references:'.format(len(CutSites), txt))
   for key in RefSeqs:
-    print('\n- CutSite locations:')
+    print('\n\033[35m- CutSite locations:\033[0m')
     print(key, '=', CutSites)
 
   if txt == 'DFG':
@@ -372,20 +374,22 @@ def CheckPIR( seq_file, mdl_output_pref ):
         Temp.append(line)
 
   # Check the format of each entry and save the sequence dataset
-  # Sequences format: Item[0] (>P1;) Item[1] (structureX|sequence)
-  #                   Item[2] (aligned fasta) Item[3] (fasta length)
+  # Sequences format: Item[0] (>P1;)
+  #                   Item[1] (structureX|sequence)
+  #                   Item[2] (aligned fasta)
+  #                   Item[3] (fasta length)
   #                   Item[4] (protein name)
   Pir = []
   for index, Prot in enumerate(Sets):
     Seq = []
     if re.search(r'>P1;', Prot[0]): 
-      Seq.append(Prot[0])                           # Seq[0]
+      Seq.append(Prot[0])     # Seq[0]
     else:
       sys.exit('\n  > #2# ERROR: PIR file Missing "Header >P1;" for entry no.{0}: {1}'.format(
                       index+1, mdl_output_pref ) )
 
     if re.search('(sequence:|structureX:)', Prot[1]):
-      Seq.append(Prot[1])                           # Seq[1]
+      Seq.append(Prot[1])     # Seq[1]
     else:
       sys.exit('\n  > #2# ERROR: PIR file Missing "Info sequence:" for entry no.{0}: {1}'.format(
                       index+1, mdl_output_pref ) )

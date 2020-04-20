@@ -188,13 +188,8 @@ def VariableSetup( Vars, family, name, conf, cpu_num,
 
   dataset_dir = Vars['DatasetDirectory']
   ## For each conformation type, select the corresponding template sets for modeling
-  # If typical DFG-in/out (C-in), select either S/T or Y template set
-  if re.search(r'cidi', conf, re.IGNORECASE):
-    if re.search(r'(st)|(serine)|(ser/ter)|(s/t)', Vars['KinaseFamily'], re.IGNORECASE):
-      Vars['TemplateList'] = '{0}/{1}'.format(dataset_dir, TL('cidi_s_templ'))
-    if re.search(r'(y)|(tyr)|(tyrosine)',  Vars['KinaseFamily'], re.IGNORECASE):
-      Vars['TemplateList'] = '{0}/{1}'.format(dataset_dir, TL('cidi_y_templ'))
 
+  # If typical DFG-in/out (C-in), select either S/T or Y template set
   if re.search(r'cido', conf, re.IGNORECASE):
     if re.search(r'(st)|(serine)|(ser/ter)|(s/t)', Vars['KinaseFamily'], re.IGNORECASE):
       Vars['TemplateList'] = '{0}/{1}'.format(dataset_dir, TL('cido_s_templ'))
@@ -213,6 +208,8 @@ def VariableSetup( Vars, family, name, conf, cpu_num,
   if re.search(r'EGFR', conf, re.IGNORECASE):
     Vars['TemplateList'] = '{0}/{1}'.format(dataset_dir, TL('egfr_templ'))
 
+  if re.search(r'cidi', conf, re.IGNORECASE):
+    Vars['TemplateList'] = '{0}/{1}'.format(dataset_dir, TL('cidi_templ'))
 
   if re.search(r'codo', conf, re.IGNORECASE):
     Vars['TemplateList'] = '{0}/{1}'.format(dataset_dir, TL('codo_templ'))

@@ -5,9 +5,9 @@ import os,re
 import pandas as pd
 
 from tqdm import tqdm
-from x_pir_multi_align import FASTA_Gen
-from x_pir_multi_align import RunClustalO
-from x_pir_multi_align import CacheSeqDatabase
+from x_pir_functions import FASTA_Gen
+from x_pir_functions import RunClustalO
+from x_pir_functions import CacheSeqDatabase
 
 msg = '''\n  > {0}
       [ List of PDB file to be validated ]

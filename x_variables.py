@@ -23,6 +23,7 @@ struct_database=dataset_dir+'stdy_kinase_xtal.all.200329.clean.fasta'
 struct_nogap  = dataset_dir+'stdy_kinase_xtal.all.200329.clean.nogap.fasta'
 kinome_database=dataset_dir+'MD_human_kinome_alignment.2019.200331.be_modeled.fasta'
 kinome_nogap  = dataset_dir+'MD_human_kinome_alignment.2019.200331.be_modeled.nogap.fasta'
+conf_classify = dataset_dir+'stdy_kinase_xtal.all.200321.conf.SK_nn_kinfo_classify.csv.bz2'
 # T-coffee has a limiting issue with too long of path+filename, result in coredump
 
 reference_pdb = '1atp.pdb'
@@ -95,15 +96,16 @@ UseDiskNotMemory\t\tfalse\nOutputEqualNumPointsPerFrame\tfalse''',
 ## Choose which conformation template list for homology modeling
 def TemplatePDBList ( conf ):
   Template = {
-    'cidi_s_templ' : 'u_cidi.stkinase_templ_pdb.txt',
-    'cidi_y_templ' : 'u_cidi.ykinase_templ_pdb.txt',
     'cido_s_templ' : 'u_cido.stkinase_templ_pdb.txt',
     'cido_y_templ' : 'u_cido.ykinase_templ_pdb.txt',
+
     'codi_templ'   : 'u_codi.templ_pdb.1.txt,u_codi.templ_pdb.2.txt,u_codi.templ_pdb.3.txt,u_codi.templ_pdb.4.txt',
     'III_templ'    : 'u_codi.templ_pdb.III.txt',
     'met_templ'    : 'u_codi.templ_pdb.met.txt',
     'egfr_templ'   : 'u_codi.templ_pdb.egfr.txt',
+
     'codo_templ'   : 'u_codo.templ_pdb.txt',
+    'cidi_templ'   : 'u_cidi.templ_pdb.txt',
     'wcd_templ'    : 'u_wcd.templ_pdb.1.txt,u_wcd.templ_pdb.2.txt',
   }
   return Template[conf]
@@ -112,8 +114,11 @@ def TemplatePDBList ( conf ):
 ##########################################################################
 ## CutSite templates for DFGmodel and N-/C-termini. This limits the size
 ## of modeled structure to specifically the core catalytic domain only
+## * 1ATP_E has N-/C-ter being too long, better not use it for modeling
 def NCTermTempls():
-  NCCutsites = ['1ATP:QLD|QF/NHK|WF',   # (Refernce columns) 1ATP P05132 (bovine)
+            #  PDB: <pre-beta-1>|<post-I-helix>
+  NCCutsites = ['1ATP:QLD|QF/NHK|WF',   # (Reference posi)   1ATP P05132 (bovine)
+                '2BDF:PRE|SL/TST|EP',   # (reference CIDI)   SRC (human)
                 '3KQ7:VPE|RY/AQY|HD',   # (c-in,  d-out, st) p38a Q16539
                 '3NPC:VLK|RY/RHP|YI',   # (c-in,  d-out, st) JNK2 P45984
                 '3UGC:EER|HL/QIR|DN',   # (c-in,  d-out, y)  JAK2 O60674
@@ -138,7 +143,9 @@ def NCTermTempls():
   return NCCutsites
 
 def DFGTempls():
-  DFGCutsites = [ '1ATP:AGG|EM/GYI|QV/GTP|EY', # (Refernce columns) 1ATP P05132 (bovine)
+                #  PDB:<hinge>|<pre-DFG>|<pre-APE>
+  DFGCutsites = [ '1ATP:AGG|EM/GYI|QV/GTP|EY', # (Reference posi)    1ATP P05132 (bovine)
+                  '2BDF:SKG|SL/LVC|KV/FPI|KW', # (reference CIDI)    SRC (human)
                   '3KQ7:MGA|DL/CEL|KI/ATR|WY', # (c-in,  d-out, st) p38a Q16539
                   '3NPC:MDA|NL/CTL|KI/VTR|YY', # (c-in,  d-out, st) JNK2 P45984
                   '3UGC:PYG|SL/NRV|KI/SPI|FW', # (c-in,  d-out, y)  JAK2 O60674
@@ -182,6 +189,8 @@ def DefaultVariables():
     'StructNoGap'       : struct_nogap,
     'KinomeDatabase'    : kinome_database,
     'KinomeNoGap'       : kinome_nogap,
+    'ConfClassify'      : conf_classify,
+
     'PDBDirectory'      : stkinase_dir,
     'SuperposeRefResi'  : superpose_resi,
     'ReferencePDB'      : reference_pdb,
